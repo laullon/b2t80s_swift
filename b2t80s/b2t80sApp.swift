@@ -9,6 +9,11 @@ import SwiftUI
 
 @main
 struct b2t80sApp: App {
+    
+    init() {
+//        var z80 = z80()
+    }
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
