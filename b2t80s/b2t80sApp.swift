@@ -9,14 +9,19 @@ import SwiftUI
 
 @main
 struct b2t80sApp: App {
-    
+    var machine: zx48k
+
     init() {
-//        var z80 = z80()
+        let m = zx48k()
+        machine = m
+        DispatchQueue(label: "machine").async {
+            m.run()
+        }
     }
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(monitor: machine.monitor, cpu:machine.cpu)
         }
     }
 }

@@ -12,7 +12,7 @@ typealias z80EXECf = (_ cpu: z80)->()
 typealias z80MRf =  (_ cpu: z80, _ data: UInt8)->()
 typealias z80f = (_ cpu: z80)->()
 typealias z80INf =  (_ cpu: z80, _ data: UInt8)->()
-typealias z80Painter = (_ op: opCode, _ cpu: z80)->(String)
+typealias z80Painter = (_ op: opCode, _ fetchedData: FetchedData)->(String)
 
 protocol z80op {
     func tick(_ cpu: z80)
@@ -21,7 +21,7 @@ protocol z80op {
 }
 
 
-class FetchedData {
+struct FetchedData {
     var pc     :UInt16 = 0
     var prefix :UInt16 = 0
     var opCode :UInt8 = 0
@@ -35,6 +35,14 @@ class FetchedData {
         self.op = op
     }
 }
+
+extension Array where Element == FetchedData {
+
+    func dump() -> String {
+        return self.reduce("") {"\($0)\n\($1.pc.toHex()) - \($1.op.disassemble($1))"}.trimmingCharacters(in: .newlines)
+    }
+}
+
 
 struct opCode {
     var name       :String
@@ -54,8 +62,8 @@ struct opCode {
         self.diss = diss
     }
 
-    func disassemble(_ cpu: z80) -> String {
-        return diss(self,cpu)
+    func disassemble(_ fetchedData: FetchedData) -> String {
+        return diss(self, fetchedData)
     }
 }
 

@@ -33,6 +33,7 @@ class z80 {
     var halfcarryAddTable: [Bool] = [false, true, true, true, false, false, false, true]
     var halfcarrySubTable: [Bool] = [false, false, true, false, true, false, true, true]
     
+    var log: [FetchedData] = Array()
 
     init(_ bus: Bus){
         self.bus = bus
@@ -220,6 +221,10 @@ class z80 {
         if scheduler.first().isDone() {
             scheduler.next()
             if scheduler.isEmpty() {
+                log.append(fetched)
+                if log.count > 10 {
+                    log.remove(at: 0)
+                }
 //                print("-> \(fetched.pc.toHex()) - \(fetched.op.name)")
 //                print("\t\t\t\t\t\t\t\t\t\(regs)")
                 if doInterrupt {

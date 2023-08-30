@@ -8,35 +8,34 @@
 import Foundation
 
 var z80OpsCodeTable :[opCode] = [
-    opCode("LD dd, mm", 0b11001111, 0b00000001, 3, [mrNNpc(f: ldDDmm)], {cpu in ()}),
-    opCode("ADD HL,ss", 0b11001111, 0b00001001, 1, [Exec(l: 7, f: addHLss)], {cpu in ()}),
-    opCode("INC ss", 0b11001111, 0b00000011, 1, [Exec(l: 2, f: incSS)], {cpu in ()}),
-    opCode("DEC ss", 0b11001111, 0b00001011, 1, [Exec(l: 2, f: decSS)], {cpu in ()}),
-    opCode("POP ss", 0b11001111, 0b11000001, 1, [], popSS),
-    opCode("PUSH ss", 0b11001111, 0b11000101, 1, [Exec(l: 1, f: pushSS)], {cpu in ()}),
+    opCode("LD rp[p], nn", 0b11001111, 0b00000001, 3, [mrNNpc(f: ldDDmm)], {cpu in ()}, diss_ldDDmm),
+    opCode("ADD HL, rp[p]", 0b11001111, 0b00001001, 1, [Exec(l: 7, f: addHLss)], {cpu in ()}),
+    opCode("INC rp[p]", 0b11001111, 0b00000011, 1, [Exec(l: 2, f: incSS)], {cpu in ()}),
+    opCode("DEC rp[p]", 0b11001111, 0b00001011, 1, [Exec(l: 2, f: decSS)], {cpu in ()}),
+    opCode("POP rp2[p]", 0b11001111, 0b11000001, 1, [], popSS),
+    opCode("PUSH rp2[p]", 0b11001111, 0b11000101, 1, [Exec(l: 1, f: pushSS)], {cpu in ()}),
 
-    opCode("LD r, n", 0b11000111, 0b00000110, 2, [mrNpc(f: ldRn)], {cpu in ()},dis_ldrn),
-    opCode("LD r, r'", 0b11000000, 0b01000000, 1, [], ldRr),
-    opCode("LD r, (HL)", 0b11000111, 0b01000110, 1, [], ldRhl),
+    opCode("LD r[y], n", 0b11000111, 0b00000110, 2, [mrNpc(f: ldRn)], {cpu in ()},dis_ldrn),
+    opCode("LD r[y], r[z]", 0b11000000, 0b01000000, 1, [], ldRr),
+    opCode("LD r[y], (HL)", 0b11000111, 0b01000110, 1, [], ldRhl),
     opCode("LD (HL), r", 0b11111000, 0b01110000, 1, [], ldHLr),
-    opCode("INC r", 0b11000111, 0b0000100, 1, [], incR),
-    opCode("DEC r", 0b11000111, 0b0000101, 1, [], decR),
-    opCode("ADD A, r", 0b11111000, 0b10000000, 1, [], addAr),
-    opCode("ADC A, r", 0b11111000, 0b10001000, 1, [], adcAr),
-    opCode("SUB A, r", 0b11111000, 0b10010000, 1, [], subAr),
-    opCode("SBC A, r", 0b11111000, 0b10011000, 1, [], sbcAr),
-    opCode("AND r", 0b11111000, 0b10100000, 1, [], andAr),
-    opCode("OR r", 0b11111000, 0b10110000, 1, [], orAr),
-    opCode("XOR r", 0b11111000, 0b10101000, 1, [], xorAr),
-    opCode("CP r", 0b11111000, 0b10111000, 1, [], cpR),
+    opCode("INC r[y]", 0b11000111, 0b0000100, 1, [], incR),
+    opCode("DEC r[y]", 0b11000111, 0b0000101, 1, [], decR),
+    opCode("ADD A, r[z]", 0b11111000, 0b10000000, 1, [], addAr),
+    opCode("ADC A, r[z]", 0b11111000, 0b10001000, 1, [], adcAr),
+    opCode("SUB A, r[z]", 0b11111000, 0b10010000, 1, [], subAr),
+    opCode("SBC A, r[z]", 0b11111000, 0b10011000, 1, [], sbcAr),
+    opCode("AND r[z]", 0b11111000, 0b10100000, 1, [], andAr),
+    opCode("OR r[z]", 0b11111000, 0b10110000, 1, [], orAr),
+    opCode("XOR r[z]", 0b11111000, 0b10101000, 1, [], xorAr),
+    opCode("CP r[z]", 0b11111000, 0b10111000, 1, [], cpR),
 
-    opCode("RET cc", 0b11000111, 0b11000000, 1, [Exec(l: 1, f: retCC)], {cpu in ()}),
-    opCode("JP cc, nn", 0b11000111, 0b11000010, 3, [mrNNpc(f: jpCC)], {cpu in ()}),
-    opCode("CALL cc, nn", 0b11000111, 0b11000100, 3, [mrNNpc(f: callCC)], {cpu in ()}),
-    opCode("RST p", 0b11000111, 0b11000111, 1, [Exec(l: 1, f: rstP)], {cpu in ()}),
+    opCode("RET cc[y]", 0b11000111, 0b11000000, 1, [Exec(l: 1, f: retCC)], {cpu in ()}),
+    opCode("JP cc[y], nn", 0b11000111, 0b11000010, 3, [mrNNpc(f: jpCC)], {cpu in ()}),
+    opCode("CALL cc[y], nn", 0b11000111, 0b11000100, 3, [mrNNpc(f: callCC)], {cpu in ()}),
+    opCode("RST y*8", 0b11000111, 0b11000111, 1, [Exec(l: 1, f: rstP)], {cpu in ()}),
     opCode("CALL nn", 0xFF, 0xCD, 3, [mrNNpc(f: {cpu in ()}), Exec(l: 1, f: call)], {cpu in ()}),
 
-    // {"", 0xFF, 0x1,,[]],nil},
     opCode("NOP", 0xFF, 0x00, 1, [], {cpu in ()}),
     opCode("DAA", 0xFF, 0x27, 1, [], daa),
     opCode("CPL", 0xFF, 0x2f, 1, [], cpl),
@@ -75,12 +74,12 @@ var z80OpsCodeTable :[opCode] = [
     opCode("EX AF, AF'", 0xFF, 0x08, 1, [], exafaf),
     opCode("EXX'", 0xFF, 0xD9, 1, [], exx),
 
-    opCode("DJNZ e", 0xFF, 0x10, 2, [mrNpc(f: {cpu in ()}), Exec(l: 1, f: djnz)], {cpu in ()}),
-    opCode("JR e", 0xFF, 0x18, 2, [mrNpc(f: {cpu in ()}), Exec(l: 5, f: jr)], {cpu in ()}),
-    opCode("JRNZ e", 0xFF, 0x20, 2, [mrNpc(f: jrnz)], {cpu in ()}),
-    opCode("JRZ e", 0xFF, 0x28, 2, [mrNpc(f: jrz)], {cpu in ()}),
-    opCode("JRNC e", 0xFF, 0x30, 2, [mrNpc(f: jrnc)], {cpu in ()}),
-    opCode("JRC e", 0xFF, 0x38, 2, [mrNpc(f: jrc)], {cpu in ()}),
+    opCode("DJNZ d", 0xFF, 0x10, 2, [mrNpc(f: {cpu in ()}), Exec(l: 1, f: djnz)], {cpu in ()}),
+    opCode("JR d", 0xFF, 0x18, 2, [mrNpc(f: {cpu in ()}), Exec(l: 5, f: jr)], {cpu in ()}),
+    opCode("JRNZ d", 0xFF, 0x20, 2, [mrNpc(f: jrnz)], {cpu in ()}),
+    opCode("JRZ d", 0xFF, 0x28, 2, [mrNpc(f: jrz)], {cpu in ()}),
+    opCode("JRNC d", 0xFF, 0x30, 2, [mrNpc(f: jrnc)], {cpu in ()}),
+    opCode("JRC d", 0xFF, 0x38, 2, [mrNpc(f: jrc)], {cpu in ()}),
 
     opCode("JP nn", 0xFF, 0xC3, 3, [mrNNpc(f: {cpu in cpu.regs.PC = cpu.fetched.nn })], {cpu in ()}),
 
@@ -96,16 +95,16 @@ var z80OpsCodeTable :[opCode] = [
     opCode("JP HL", 0xFF, 0xE9, 1, [], {cpu in cpu.regs.PC = cpu.regs.HL }),
     opCode("EX DE, HL", 0xFF, 0xEB, 1, [], exDEhl),
 
-    opCode("XOR *", 0xFF, 0xEE, 2, [mrNpc(f: {cpu in cpu.xor(cpu.fetched.n)})], {cpu in ()}),
+    opCode("XOR n", 0xFF, 0xEE, 2, [mrNpc(f: {cpu in cpu.xor(cpu.fetched.n)})], {cpu in ()}),
     opCode("DI", 0xFF, 0xF3, 1, [], {cpu in cpu.regs.IFF1 = false; cpu.regs.IFF2 = false }),
     opCode("EI", 0xFF, 0xFb, 1, [], {cpu in cpu.regs.IFF1 = true; cpu.regs.IFF2 = true }),
     opCode("LD SP, HL", 0xFF, 0xF9, 1, [Exec(l: 2, f: {cpu in cpu.regs.SP = (cpu.regs.HL) })], {cpu in ()}),
-    opCode("CP *", 0xFF, 0xFe, 2, [mrNpc(f: {cpu in cpu.cp(cpu.fetched.n)})], {cpu in ()}),
+    opCode("CP n", 0xFF, 0xFe, 2, [mrNpc(f: {cpu in cpu.cp(cpu.fetched.n)})], {cpu in ()}),
 
-    opCode("CB", 0xFF, 0xCB, 1, [], {cpu in cpu.decodeCB()}),
-    opCode("DD", 0xFF, 0xDD, 1, [], {cpu in cpu.decodeDD()}),
-    opCode("ED", 0xFF, 0xED, 1, [], {cpu in cpu.decodeED()}),
-    opCode("ED", 0xFF, 0xFD, 1, [], {cpu in cpu.decodeFD()}),
+    opCode("CB", 0xFF, 0xCB, 1, [], {cpu in cpu.decodeCB()}, dis_invalid),
+    opCode("DD", 0xFF, 0xDD, 1, [], {cpu in cpu.decodeDD()}, dis_invalid),
+    opCode("ED", 0xFF, 0xED, 1, [], {cpu in cpu.decodeED()}, dis_invalid),
+    opCode("FD", 0xFF, 0xFD, 1, [], {cpu in cpu.decodeFD()}, dis_invalid),
 ]
 
 var z80OpsCodeTableCB :[opCode] = [
@@ -129,19 +128,19 @@ var z80OpsCodeTableCB :[opCode] = [
     opCode("SRL r", 0b11111000, 0b00111000, 1, [], cbR),
     opCode("SRL (HL)", 0xFF, 0x3e, 1, [Exec(l: 1, f: cbHL)], {cpu in ()}),
 
-    opCode("BIT b, r", 0b11000000, 0b01000000, 1, [], bit),
-    opCode("BIT b, (HL)", 0b11000111, 0b01000110, 1, [Exec(l: 1, f: bitHL)], {cpu in ()}),
+    opCode("BIT y, r[z]", 0b11000000, 0b01000000, 1, [], bit),
+    opCode("BIT y, (HL)", 0b11000111, 0b01000110, 1, [Exec(l: 1, f: bitHL)], {cpu in ()}),
 
-    opCode("RES b, r", 0b11000000, 0b10000000, 1, [], res),
-    opCode("RES b, (HL)", 0b11000111, 0b10000110, 1, [Exec(l: 1, f: resHL)], {cpu in ()}),
+    opCode("RES y, r[z]", 0b11000000, 0b10000000, 1, [], res),
+    opCode("RES y, (HL)", 0b11000111, 0b10000110, 1, [Exec(l: 1, f: resHL)], {cpu in ()}),
 
-    opCode("SET b, r", 0b11000000, 0b11000000, 1, [], set),
-    opCode("SET b, (HL)", 0b11000111, 0b11000110, 1, [Exec(l: 1, f: setHL)], {cpu in ()}),
+    opCode("SET y, r[z]", 0b11000000, 0b11000000, 1, [], set),
+    opCode("SET y, (HL)", 0b11000111, 0b11000110, 1, [Exec(l: 1, f: setHL)], {cpu in ()}),
 ]
 
 var z80OpsCodeTableDD :[opCode] = [
-    opCode("LD r, r'", 0b11000000, 0b01000000, 1, [], ldRr),
-    opCode("ADD IX, rr", 0b11001111, 0b00001001, 1, [Exec(l: 7, f: addIXY)], {cpu in ()}),
+    opCode("LD r[y], r[z]", 0b11000000, 0b01000000, 1, [], ldRr),
+    opCode("ADD IX, rp[p]", 0b11001111, 0b00001001, 1, [Exec(l: 7, f: addIXY)], {cpu in ()}),
     opCode("LD IX, nn", 0xFF, 0x21, 3, [mrNNpc(f: {cpu in cpu.regs.IXH = cpu.fetched.n2; cpu.regs.IXL = cpu.fetched.n})], {cpu in ()}),
     opCode("LD (nn), IX", 0xFF, 0x22, 3, [mrNNpc(f: ldNNIXY)], {cpu in ()}),
     opCode("INC IX", 0xFF, 0x23, 1, [Exec(l: 2, f: {cpu in cpu.regs.IX = (cpu.regs.IX &+ 1)})], {cpu in ()}),
@@ -209,8 +208,8 @@ var z80OpsCodeTableDD :[opCode] = [
 ]
 
 var z80OpsCodeTableFD :[opCode] = [
-    opCode("LD r, r'", 0b11000000, 0b01000000, 1, [], ldRr),
-    opCode("ADD IY, rr", 0b11001111, 0b00001001, 1, [Exec(l: 7, f: addIXY)], {cpu in ()}),
+    opCode("LD r[y], r[z]", 0b11000000, 0b01000000, 1, [], ldRr),
+    opCode("ADD IY, rp[p]", 0b11001111, 0b00001001, 1, [Exec(l: 7, f: addIXY)], {cpu in ()}),
     opCode("LD IY, nn", 0xFF, 0x21, 3, [mrNNpc(f: {cpu in cpu.regs.IYH = cpu.fetched.n2; cpu.regs.IYL = cpu.fetched.n})], {cpu in ()}),
     opCode("LD (nn), IY", 0xFF, 0x22, 3, [mrNNpc(f: ldNNIXY)], {cpu in ()}),
     opCode("INC IY", 0xFF, 0x23, 1, [Exec(l: 2, f: {cpu in cpu.regs.IY = (cpu.regs.IY &+ 1)})], {cpu in ()}),
@@ -298,14 +297,14 @@ var z80OpsCodeTableDDCB :[opCode] = [
     opCode("SRL (IX+d), r", 0b11111000, 0b00111000, 1, [Exec(l: 2, f: cbIXYdr)], {cpu in ()}),
     opCode("SRL (IX+d)", 0xFF, 0x3e, 1, [Exec(l: 2, f: cbIXYd)], {cpu in ()}),
 
-    opCode("BIT b, (IX+d), r", 0b11000000, 0b01000000, 1, [Exec(l: 2, f: bitIXYd)], {cpu in ()}),
-    opCode("BIT b, (IX+d)", 0b11000111, 0b01000110, 1, [Exec(l: 2, f: bitIXYd)], {cpu in ()}),
+    opCode("BIT y, (IX+d), r", 0b11000000, 0b01000000, 1, [Exec(l: 2, f: bitIXYd)], {cpu in ()}),
+    opCode("BIT y, (IX+d)", 0b11000111, 0b01000110, 1, [Exec(l: 2, f: bitIXYd)], {cpu in ()}),
 
-    opCode("RES b, (IX+d), r", 0b11000000, 0b10000000, 1, [Exec(l: 2, f: resIXYdR)], {cpu in ()}),
-    opCode("RES b, (IX+d)", 0b11000111, 0b10000110, 1, [Exec(l: 2, f: resIXYd)], {cpu in ()}),
+    opCode("RES y, (IX+d), r", 0b11000000, 0b10000000, 1, [Exec(l: 2, f: resIXYdR)], {cpu in ()}),
+    opCode("RES y, (IX+d)", 0b11000111, 0b10000110, 1, [Exec(l: 2, f: resIXYd)], {cpu in ()}),
 
-    opCode("SET b, (IX+d), r", 0b11000000, 0b11000000, 1, [Exec(l: 2, f: setIXYdR)], {cpu in ()}),
-    opCode("SET b, (IX+d)", 0b11000111, 0b11000110, 1, [Exec(l: 2, f: setIXYd)], {cpu in ()}),
+    opCode("SET y, (IX+d), r", 0b11000000, 0b11000000, 1, [Exec(l: 2, f: setIXYdR)], {cpu in ()}),
+    opCode("SET y, (IX+d)", 0b11000111, 0b11000110, 1, [Exec(l: 2, f: setIXYd)], {cpu in ()}),
 ]
 
 var z80OpsCodeTableFDCB :[opCode] = [
@@ -329,14 +328,14 @@ var z80OpsCodeTableFDCB :[opCode] = [
     opCode("SRL (IY+d), r", 0b11111000, 0b00111000, 1, [Exec(l: 2, f: cbIXYdr)], {cpu in ()}),
     opCode("SRL (IY+d)", 0xFF, 0x3e, 1, [Exec(l: 2, f: cbIXYd)], {cpu in ()}),
 
-    opCode("BIT b, (IY+d), r", 0b11000000, 0b01000000, 1, [Exec(l: 2, f: bitIXYd)], {cpu in ()}),
-    opCode("BIT b, (IY+d)", 0b11000111, 0b01000110, 1, [Exec(l: 2, f: bitIXYd)], {cpu in ()}),
+    opCode("BIT y, (IY+d), r", 0b11000000, 0b01000000, 1, [Exec(l: 2, f: bitIXYd)], {cpu in ()}),
+    opCode("BIT y, (IY+d)", 0b11000111, 0b01000110, 1, [Exec(l: 2, f: bitIXYd)], {cpu in ()}),
 
-    opCode("RES b, (IY+d), r", 0b11000000, 0b10000000, 1, [Exec(l: 2, f: resIXYdR)], {cpu in ()}),
-    opCode("RES b, (IY+d)", 0b11000111, 0b10000110, 1, [Exec(l: 2, f: resIXYd)], {cpu in ()}),
+    opCode("RES y, (IY+d), r", 0b11000000, 0b10000000, 1, [Exec(l: 2, f: resIXYdR)], {cpu in ()}),
+    opCode("RES y, (IY+d)", 0b11000111, 0b10000110, 1, [Exec(l: 2, f: resIXYd)], {cpu in ()}),
 
-    opCode("SET b, (IY+d), r", 0b11000000, 0b11000000, 1, [Exec(l: 2, f: setIXYdR)], {cpu in ()}),
-    opCode("SET b, (IY+d)", 0b11000111, 0b11000110, 1, [Exec(l: 2, f: setIXYd)], {cpu in ()}),
+    opCode("SET y, (IY+d), r", 0b11000000, 0b11000000, 1, [Exec(l: 2, f: setIXYdR)], {cpu in ()}),
+    opCode("SET y, (IY+d)", 0b11000111, 0b11000110, 1, [Exec(l: 2, f: setIXYd)], {cpu in ()}),
 ]
 
 var z80OpsCodeTableED :[opCode] = [
@@ -350,8 +349,8 @@ var z80OpsCodeTableED :[opCode] = [
     opCode("SBC HL, HL", 0xFF, 0x62, 1, [Exec(l: 7, f: {cpu in cpu.sbcHL(cpu.regs.HL)})], {cpu in ()}),
     opCode("SBC HL, SP", 0xFF, 0x72, 1, [Exec(l: 7, f: {cpu in cpu.sbcHL(cpu.regs.SP)})], {cpu in ()}),
 
-    opCode("LD (nn), dd", 0b11001111, 0b01000011, 3, [mrNNpc(f: ldNNdd)], {cpu in ()}),
-    opCode("LD dd, (nn)", 0b11001111, 0b01001011, 3, [mrNNpc(f: ldDDnn)], {cpu in ()}),
+    opCode("LD (nn), rp[p]", 0b11001111, 0b01000011, 3, [mrNNpc(f: ldNNdd)], {cpu in ()}),
+    opCode("LD rp[p], (nn)", 0b11001111, 0b01001011, 3, [mrNNpc(f: ldDDnn)], {cpu in ()}),
     opCode("NEG", 0b11000111, 0b01000100, 1, [], {cpu in var n = cpu.regs.A; cpu.regs.A = 0; cpu.subA(n) }),
     opCode("RETN", 0b11000111, 0b01000101, 1, [], {cpu in cpu.regs.IFF1 = cpu.regs.IFF2; ret(cpu: cpu) }),
 

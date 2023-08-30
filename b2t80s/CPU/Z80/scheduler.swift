@@ -89,8 +89,8 @@ class MW :basicOp {
         case 2:
             cpu.bus.data = data
         case 3:
-            cpu.bus.WriteMemory()
-            cpu.bus.Release()
+            cpu.bus.writeMemory()
+            cpu.bus.release()
             f(cpu)
             done = true
         default:
@@ -116,9 +116,9 @@ class MR :basicOp {
         case 2:
             ()
         case 3:
-            cpu.bus.ReadMemory()
+            cpu.bus.readMemory()
             let d = cpu.bus.data
-            cpu.bus.Release()
+            cpu.bus.release()
             f(cpu, d)
             done = true
         default:
@@ -147,9 +147,9 @@ class Fetch :basicOp {
             ()
         case 3:
             cpu.regs.M1 = false
-            cpu.bus.ReadMemory()
+            cpu.bus.readMemory()
             let d = cpu.bus.data
-            cpu.bus.Release()
+            cpu.bus.release()
             cpu.fetched.prefix = cpu.fetched.prefix << 8
             cpu.fetched.prefix |= uint16(cpu.fetched.opCode)
             cpu.fetched.opCode = d
@@ -184,9 +184,9 @@ class mrNNpc :basicOp {
         case 2:
             ()
         case 3:
-            cpu.bus.ReadMemory()
+            cpu.bus.readMemory()
             let d = cpu.bus.data
-            cpu.bus.Release()
+            cpu.bus.release()
             cpu.fetched.n = d
         case 4:
             cpu.bus.addr = (cpu.regs.PC)
@@ -194,9 +194,9 @@ class mrNNpc :basicOp {
         case 5:
             ()
         case 6:
-            cpu.bus.ReadMemory()
+            cpu.bus.readMemory()
             let d = cpu.bus.data
-            cpu.bus.Release()
+            cpu.bus.release()
             cpu.fetched.n2 = d
             cpu.fetched.nn = uint16(cpu.fetched.n) | (uint16(cpu.fetched.n2) << 8)
             f(cpu)
@@ -224,9 +224,9 @@ class mrNpc :basicOp {
         case 2:
             ()
         case 3:
-            cpu.bus.ReadMemory()
+            cpu.bus.readMemory()
             let d = cpu.bus.data
-            cpu.bus.Release()
+            cpu.bus.release()
             cpu.fetched.n = d
             f(cpu)
             done = true
@@ -255,8 +255,8 @@ class mw :basicOp {
         case 2:
             cpu.bus.data = data
         case 3:
-            cpu.bus.WriteMemory()
-            cpu.bus.Release()
+            cpu.bus.writeMemory()
+            cpu.bus.release()
             f(cpu)
             done = true
         default:
@@ -282,9 +282,9 @@ class mr :basicOp {
         case 2:
             ()
         case 3:
-            cpu.bus.ReadMemory()
+            cpu.bus.readMemory()
             let d = cpu.bus.data
-            cpu.bus.Release()
+            cpu.bus.release()
             f(cpu, d)
             done = true
         default:
@@ -310,8 +310,8 @@ class out :basicOp {
         case 1:
             cpu.bus.addr = addr
             cpu.bus.data = data
-            cpu.bus.WritePort()
-            cpu.bus.Release()
+            cpu.bus.writePort()
+            cpu.bus.release()
         case 2:
             ()
         case 3:
@@ -343,9 +343,9 @@ class inOP :basicOp {
         case 3:
             ()
         case 4:
-            cpu.bus.ReadPort()
+            cpu.bus.readPort()
             let data = cpu.bus.data
-            cpu.bus.Release()
+            cpu.bus.release()
             cpu.regs.F.S = data&0x0080 != 0
             cpu.regs.F.Z = data == 0
             cpu.regs.F.H = false

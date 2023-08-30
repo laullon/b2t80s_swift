@@ -11,24 +11,30 @@ protocol Bus {
     var addr :UInt16 {get set}
     var data :UInt8 {get set}
     
-    func Release()
+    func release()
     
-    mutating func ReadMemory()
-    mutating func WriteMemory()
+    func readMemory()
+    func writeMemory()
+    func readVideoMemory(_ addr: UInt16) -> UInt8
+
+    func registerPort(mask: PortMask, manager: PortManager)
+    func readPort()
+    func writePort()
     
-    func RegisterPort(mask: PortMask, manager: PortManager)
-    func ReadPort()
-    func WritePort()
-    
-    func GetBlock(addr: uint16, length: uint16) -> [UInt8]
+    func getBlock(addr: uint16, length: uint16) -> [UInt8]
 }
 
-struct PortMask  {
+struct PortMask: Hashable  {
     let mask  :UInt16
     let value :UInt16
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(mask)
+        hasher.combine(value)
+    }
 }
 
 protocol PortManager {
-    func ReadPort(_: UInt16) -> (UInt8, Bool)
-    func WritePort(_: UInt16, data: UInt8)
+    func readPort(_ port: UInt16) -> (UInt8, Bool)
+    func writePort(_ port: UInt16, _ data: UInt8)
 }

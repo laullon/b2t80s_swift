@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		204AC99A2A9E295C008FF2F8 /* bitmap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 204AC9992A9E295C008FF2F8 /* bitmap.swift */; };
 		2083689D2A8E597400E47E0B /* b2t80sApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2083689C2A8E597400E47E0B /* b2t80sApp.swift */; };
 		2083689F2A8E597400E47E0B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2083689E2A8E597400E47E0B /* ContentView.swift */; };
 		208368A12A8E597500E47E0B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 208368A02A8E597500E47E0B /* Assets.xcassets */; };
@@ -19,6 +20,9 @@
 		209C1EDF2A936E960005F128 /* tests.in in Resources */ = {isa = PBXBuildFile; fileRef = 209C1EDD2A936E960005F128 /* tests.in */; };
 		20A67ADC2A9A079E0012CEAB /* diss.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20A67ADB2A9A079E0012CEAB /* diss.swift */; };
 		20A67ADE2A9B6AC60012CEAB /* registers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20A67ADD2A9B6AC60012CEAB /* registers.swift */; };
+		20A67AE52A9DE1E40012CEAB /* 48k.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20A67AE42A9DE1E40012CEAB /* 48k.swift */; };
+		20A67AE72A9DED360012CEAB /* 48k.rom in Resources */ = {isa = PBXBuildFile; fileRef = 20A67AE62A9DEA200012CEAB /* 48k.rom */; };
+		20A67AE92A9E06AB0012CEAB /* ula.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20A67AE82A9E06AB0012CEAB /* ula.swift */; };
 		20C8C3812A8F635800188246 /* z80Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20C8C3802A8F635800188246 /* z80Tests.swift */; };
 		20C8C3852A8F69CF00188246 /* zexdocsmall.cim in Resources */ = {isa = PBXBuildFile; fileRef = 20C8C3842A8F688200188246 /* zexdocsmall.cim */; };
 		20C8C3872A8F6DDF00188246 /* bus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20C8C3862A8F6DDF00188246 /* bus.swift */; };
@@ -48,6 +52,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		200C3B362A9F72DE00B03EE4 /* tests.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = tests.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		204AC9992A9E295C008FF2F8 /* bitmap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = bitmap.swift; sourceTree = "<group>"; };
 		208368992A8E597400E47E0B /* b2t80s.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = b2t80s.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2083689C2A8E597400E47E0B /* b2t80sApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = b2t80sApp.swift; sourceTree = "<group>"; };
 		2083689E2A8E597400E47E0B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -64,6 +70,9 @@
 		209C1EDD2A936E960005F128 /* tests.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = tests.in; sourceTree = "<group>"; };
 		20A67ADB2A9A079E0012CEAB /* diss.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = diss.swift; sourceTree = "<group>"; };
 		20A67ADD2A9B6AC60012CEAB /* registers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = registers.swift; sourceTree = "<group>"; };
+		20A67AE42A9DE1E40012CEAB /* 48k.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 48k.swift; sourceTree = "<group>"; };
+		20A67AE62A9DEA200012CEAB /* 48k.rom */ = {isa = PBXFileReference; lastKnownFileType = file; path = 48k.rom; sourceTree = "<group>"; };
+		20A67AE82A9E06AB0012CEAB /* ula.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ula.swift; sourceTree = "<group>"; };
 		20C8C3802A8F635800188246 /* z80Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = z80Tests.swift; sourceTree = "<group>"; };
 		20C8C3842A8F688200188246 /* zexdocsmall.cim */ = {isa = PBXFileReference; lastKnownFileType = file; path = zexdocsmall.cim; sourceTree = "<group>"; };
 		20C8C3862A8F6DDF00188246 /* bus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = bus.swift; sourceTree = "<group>"; };
@@ -103,6 +112,7 @@
 		208368902A8E597400E47E0B = {
 			isa = PBXGroup;
 			children = (
+				200C3B362A9F72DE00B03EE4 /* tests.playground */,
 				2083689B2A8E597400E47E0B /* b2t80s */,
 				208368AD2A8E597600E47E0B /* b2t80sTests */,
 				208368B72A8E597600E47E0B /* b2t80sUITests */,
@@ -123,9 +133,11 @@
 		2083689B2A8E597400E47E0B /* b2t80s */ = {
 			isa = PBXGroup;
 			children = (
+				20A67AE22A9DE1C60012CEAB /* machines */,
 				208368CD2A8E5BDB00E47E0B /* CPU */,
 				2083689C2A8E597400E47E0B /* b2t80sApp.swift */,
 				2083689E2A8E597400E47E0B /* ContentView.swift */,
+				204AC9992A9E295C008FF2F8 /* bitmap.swift */,
 				208368A02A8E597500E47E0B /* Assets.xcassets */,
 				208368A52A8E597500E47E0B /* b2t80s.entitlements */,
 				208368A22A8E597500E47E0B /* Preview Content */,
@@ -191,6 +203,24 @@
 				20A67ADD2A9B6AC60012CEAB /* registers.swift */,
 			);
 			path = Z80;
+			sourceTree = "<group>";
+		};
+		20A67AE22A9DE1C60012CEAB /* machines */ = {
+			isa = PBXGroup;
+			children = (
+				20A67AE32A9DE1C60012CEAB /* zxspectrum */,
+			);
+			path = machines;
+			sourceTree = "<group>";
+		};
+		20A67AE32A9DE1C60012CEAB /* zxspectrum */ = {
+			isa = PBXGroup;
+			children = (
+				20A67AE42A9DE1E40012CEAB /* 48k.swift */,
+				20A67AE62A9DEA200012CEAB /* 48k.rom */,
+				20A67AE82A9E06AB0012CEAB /* ula.swift */,
+			);
+			path = zxspectrum;
 			sourceTree = "<group>";
 		};
 		20C8C37E2A8F630900188246 /* CPU */ = {
@@ -316,6 +346,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				20A67AE72A9DED360012CEAB /* 48k.rom in Resources */,
 				208368A42A8E597500E47E0B /* Preview Assets.xcassets in Resources */,
 				208368A12A8E597500E47E0B /* Assets.xcassets in Resources */,
 			);
@@ -349,9 +380,12 @@
 				20C8C38B2A8F7EE400188246 /* scheduler.swift in Sources */,
 				20A67ADE2A9B6AC60012CEAB /* registers.swift in Sources */,
 				2083689F2A8E597400E47E0B /* ContentView.swift in Sources */,
+				20A67AE92A9E06AB0012CEAB /* ula.swift in Sources */,
+				204AC99A2A9E295C008FF2F8 /* bitmap.swift in Sources */,
 				20C8C3932A92154100188246 /* test.swift in Sources */,
 				2083689D2A8E597400E47E0B /* b2t80sApp.swift in Sources */,
 				20C8C3872A8F6DDF00188246 /* bus.swift in Sources */,
+				20A67AE52A9DE1E40012CEAB /* 48k.swift in Sources */,
 				208368D02A8E5BF200E47E0B /* z80.swift in Sources */,
 				20A67ADC2A9A079E0012CEAB /* diss.swift in Sources */,
 				20C8C38F2A8F8B3A00188246 /* ops.swift in Sources */,

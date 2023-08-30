@@ -62,7 +62,7 @@ final class z80Tests: XCTestCase {
                     for (i, b) in mem.bytes.enumerated() {
                         cpu.bus.addr = mem.start + UInt16(i)
                         cpu.bus.data = b
-                        cpu.bus.WriteMemory()
+                        cpu.bus.writeMemory()
                     }
                 }
                 
@@ -91,7 +91,7 @@ final class z80Tests: XCTestCase {
 //                log.Printf("done test '%v'", test.name)
                 
                 for ms in result.memory {
-                    let cpuMen = cpu.bus.GetBlock(addr: ms.start, length: uint16(ms.bytes.count))
+                    let cpuMen = cpu.bus.getBlock(addr: ms.start, length: uint16(ms.bytes.count))
                     if (Set(ms.bytes).subtracting(Set(cpuMen))).count != 0 {
                         print(cpuMen.reduce("res:") { String(format: "\($0) %02X", $1) })
                         print(ms.bytes.reduce("exp:") { String(format: "\($0) %02X", $1) })
@@ -369,10 +369,10 @@ final class z80Tests: XCTestCase {
             printChar(&screen, cpu)
             
             cpu.bus.addr = cpu.regs.SP
-            cpu.bus.ReadMemory()
+            cpu.bus.readMemory()
             var newPC = UInt16(cpu.bus.data)
             cpu.bus.addr = cpu.regs.SP &+ 1
-            cpu.bus.ReadMemory()
+            cpu.bus.readMemory()
             newPC |= UInt16(cpu.bus.data) << 8
 
             cpu.regs.SP = (cpu.regs.SP &+ 2)
@@ -404,7 +404,7 @@ func printChar(_ cpmScreen: inout [UInt8], _ cpu: z80) {
         var done = false
         while !done{
             cpu.bus.addr = addr
-            cpu.bus.ReadMemory()
+            cpu.bus.readMemory()
             let ch = cpu.bus.data
             if ch == 36 { // "$"
                 done = true
@@ -428,27 +428,27 @@ class DummyBus:Bus{
         self.mem = mem
     }
     
-    func ReadMemory() {
+    func readMemory() {
         data = mem[Int(addr)]
 //        print("[MR] \(addr.toHex()) => \(data.toHex())")
     }
     
-    func WriteMemory() {
+    func writeMemory() {
         mem[Int(addr)] = data
 //        print("[MW] \(addr.toHex()) <= \(data.toHex())")
     }
 
-    func Release() {
+    func release() {
     }
     
 
-    func RegisterPort(mask: b2t80s.PortMask, manager: b2t80s.PortManager) {}
+    func registerPort(mask: PortMask, manager: PortManager) {}
     
-    func ReadPort() { self.data = UInt8(self.addr >> 8) }
+    func readPort() { self.data = UInt8(self.addr >> 8) }
     
-    func WritePort() {}
+    func writePort() {}
     
-    func GetBlock(addr: uint16, length: uint16) -> [UInt8] {
+    func getBlock(addr: uint16, length: uint16) -> [UInt8] {
         return Array(mem[Int(addr)..<Int(addr+length)])
     }
 }
