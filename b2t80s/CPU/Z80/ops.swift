@@ -222,9 +222,9 @@ func ldi_m2(cpu: z80) {
     var de = cpu.regs.DE
     var hl = cpu.regs.HL
     
-    bc -= 1
-    de += 1
-    hl += 1
+    bc &-= 1
+    de &+= 1
+    hl &+= 1
     
     cpu.regs.BC = (bc)
     cpu.regs.DE = (de)
@@ -262,9 +262,9 @@ func ldd_m2(cpu: z80) {
     var de = cpu.regs.DE
     var hl = cpu.regs.HL
     
-    bc -= 1
-    de -= 1
-    hl -= 1
+    bc &-= 1
+    de &-= 1
+    hl &-= 1
     
     cpu.regs.BC = (bc)
     cpu.regs.DE = (de)

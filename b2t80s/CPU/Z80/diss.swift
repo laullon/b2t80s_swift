@@ -54,32 +54,32 @@ extension z80 {
         var res:[FetchedData] = []
         var pc = from
         for _ in 0..<nInstructions {
-            var f = FetchedData(op: bogusOpCode)
+            let f = FetchedData(op: bogusOpCode)
             f.pc = pc
-            var b = self.bus.readVideoMemory(pc)
-            switch b {
+            f.opCode = self.bus.readVideoMemory(pc)
+            switch f.opCode {
             case 0xCB:
-                f.prefix = UInt16(b)
+                f.prefix = UInt16(f.opCode)
                 pc &+= 1
-                b = self.bus.readVideoMemory(pc)
-                f.op = self.lookupCB[Int(b)]
+                f.opCode = self.bus.readVideoMemory(pc)
+                f.op = self.lookupCB[Int(f.opCode)]
             case 0xDD:
-                f.prefix = UInt16(b)
+                f.prefix = UInt16(f.opCode)
                 pc &+= 1
-                b = self.bus.readVideoMemory(pc)
-                f.op = self.lookupDD[Int(b)]
+                f.opCode = self.bus.readVideoMemory(pc)
+                f.op = self.lookupDD[Int(f.opCode)]
             case 0xED:
-                f.prefix = UInt16(b)
+                f.prefix = UInt16(f.opCode)
                 pc &+= 1
-                b = self.bus.readVideoMemory(pc)
-                f.op = self.lookupED[Int(b)]
+                f.opCode = self.bus.readVideoMemory(pc)
+                f.op = self.lookupED[Int(f.opCode)]
             case 0xFD:
-                f.prefix = UInt16(b)
+                f.prefix = UInt16(f.opCode)
                 pc &+= 1
-                b = self.bus.readVideoMemory(pc)
-                f.op = self.lookupFD[Int(b)]
+                f.opCode = self.bus.readVideoMemory(pc)
+                f.op = self.lookupFD[Int(f.opCode)]
             default:
-                f.op = self.lookup[Int(b)]
+                f.op = self.lookup[Int(f.opCode)]
             }
             if f.op.len >= 2 {
                 pc &+= 1

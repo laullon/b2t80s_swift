@@ -152,7 +152,7 @@ class ULA: PortManager {
             row += 1
             if row == scanlines {
                 row = 0
-                //                cpu.Interrupt(true)
+                cpu.doInterrupt = true
                 FrameDone()
             }
             col = 0

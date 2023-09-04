@@ -10,18 +10,20 @@ import SwiftUI
 @main
 struct b2t80sApp: App {
     var machine: zx48k
-
+    
     init() {
         let m = zx48k()
         machine = m
-        DispatchQueue(label: "machine").async {
-            m.run()
+        if NSClassFromString("XCTestCase") == nil {
+            DispatchQueue(label: "machine").async {
+                m.run()
+            }
         }
     }
     
     var body: some Scene {
         WindowGroup {
-            ContentView(monitor: machine.monitor, cpu:machine.cpu)
+            ContentView(monitor: machine.monitor, machine:machine)
         }
     }
 }

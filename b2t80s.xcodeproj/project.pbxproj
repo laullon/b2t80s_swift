@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		204AC99A2A9E295C008FF2F8 /* bitmap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 204AC9992A9E295C008FF2F8 /* bitmap.swift */; };
+		20759FF72AA34CC200E0969D /* cassete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20759FF62AA34CC200E0969D /* cassete.swift */; };
+		20759FF92AA34EE700E0969D /* tap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20759FF82AA34EE700E0969D /* tap.swift */; };
 		2083689D2A8E597400E47E0B /* b2t80sApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2083689C2A8E597400E47E0B /* b2t80sApp.swift */; };
 		2083689F2A8E597400E47E0B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2083689E2A8E597400E47E0B /* ContentView.swift */; };
 		208368A12A8E597500E47E0B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 208368A02A8E597500E47E0B /* Assets.xcassets */; };
@@ -18,11 +20,14 @@
 		208368D02A8E5BF200E47E0B /* z80.swift in Sources */ = {isa = PBXBuildFile; fileRef = 208368CF2A8E5BF200E47E0B /* z80.swift */; };
 		209C1EDE2A936E960005F128 /* tests.out in Resources */ = {isa = PBXBuildFile; fileRef = 209C1EDC2A936E960005F128 /* tests.out */; };
 		209C1EDF2A936E960005F128 /* tests.in in Resources */ = {isa = PBXBuildFile; fileRef = 209C1EDD2A936E960005F128 /* tests.in */; };
+		20A518202AA4A1AD00F04BB8 /* pacman.tap in Resources */ = {isa = PBXBuildFile; fileRef = 20A5181F2AA4A1AD00F04BB8 /* pacman.tap */; };
+		20A518222AA4A1CC00F04BB8 /* tapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20A518212AA4A1CC00F04BB8 /* tapTests.swift */; };
 		20A67ADC2A9A079E0012CEAB /* diss.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20A67ADB2A9A079E0012CEAB /* diss.swift */; };
 		20A67ADE2A9B6AC60012CEAB /* registers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20A67ADD2A9B6AC60012CEAB /* registers.swift */; };
 		20A67AE52A9DE1E40012CEAB /* 48k.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20A67AE42A9DE1E40012CEAB /* 48k.swift */; };
 		20A67AE72A9DED360012CEAB /* 48k.rom in Resources */ = {isa = PBXBuildFile; fileRef = 20A67AE62A9DEA200012CEAB /* 48k.rom */; };
 		20A67AE92A9E06AB0012CEAB /* ula.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20A67AE82A9E06AB0012CEAB /* ula.swift */; };
+		20C5EACD2AA094B90027E715 /* ula_key.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20C5EACC2AA094B90027E715 /* ula_key.swift */; };
 		20C8C3812A8F635800188246 /* z80Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20C8C3802A8F635800188246 /* z80Tests.swift */; };
 		20C8C3852A8F69CF00188246 /* zexdocsmall.cim in Resources */ = {isa = PBXBuildFile; fileRef = 20C8C3842A8F688200188246 /* zexdocsmall.cim */; };
 		20C8C3872A8F6DDF00188246 /* bus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20C8C3862A8F6DDF00188246 /* bus.swift */; };
@@ -54,6 +59,9 @@
 /* Begin PBXFileReference section */
 		200C3B362A9F72DE00B03EE4 /* tests.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = tests.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		204AC9992A9E295C008FF2F8 /* bitmap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = bitmap.swift; sourceTree = "<group>"; };
+		20759FF62AA34CC200E0969D /* cassete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cassete.swift; sourceTree = "<group>"; };
+		20759FF82AA34EE700E0969D /* tap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = tap.swift; sourceTree = "<group>"; };
+		20759FFA2AA393F600E0969D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		208368992A8E597400E47E0B /* b2t80s.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = b2t80s.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2083689C2A8E597400E47E0B /* b2t80sApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = b2t80sApp.swift; sourceTree = "<group>"; };
 		2083689E2A8E597400E47E0B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -68,11 +76,14 @@
 		208368CF2A8E5BF200E47E0B /* z80.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = z80.swift; sourceTree = "<group>"; };
 		209C1EDC2A936E960005F128 /* tests.out */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = tests.out; sourceTree = "<group>"; };
 		209C1EDD2A936E960005F128 /* tests.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = tests.in; sourceTree = "<group>"; };
+		20A5181F2AA4A1AD00F04BB8 /* pacman.tap */ = {isa = PBXFileReference; lastKnownFileType = file; path = pacman.tap; sourceTree = "<group>"; };
+		20A518212AA4A1CC00F04BB8 /* tapTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = tapTests.swift; sourceTree = "<group>"; };
 		20A67ADB2A9A079E0012CEAB /* diss.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = diss.swift; sourceTree = "<group>"; };
 		20A67ADD2A9B6AC60012CEAB /* registers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = registers.swift; sourceTree = "<group>"; };
 		20A67AE42A9DE1E40012CEAB /* 48k.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 48k.swift; sourceTree = "<group>"; };
 		20A67AE62A9DEA200012CEAB /* 48k.rom */ = {isa = PBXFileReference; lastKnownFileType = file; path = 48k.rom; sourceTree = "<group>"; };
 		20A67AE82A9E06AB0012CEAB /* ula.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ula.swift; sourceTree = "<group>"; };
+		20C5EACC2AA094B90027E715 /* ula_key.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ula_key.swift; sourceTree = "<group>"; };
 		20C8C3802A8F635800188246 /* z80Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = z80Tests.swift; sourceTree = "<group>"; };
 		20C8C3842A8F688200188246 /* zexdocsmall.cim */ = {isa = PBXFileReference; lastKnownFileType = file; path = zexdocsmall.cim; sourceTree = "<group>"; };
 		20C8C3862A8F6DDF00188246 /* bus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = bus.swift; sourceTree = "<group>"; };
@@ -133,6 +144,7 @@
 		2083689B2A8E597400E47E0B /* b2t80s */ = {
 			isa = PBXGroup;
 			children = (
+				20759FFA2AA393F600E0969D /* Info.plist */,
 				20A67AE22A9DE1C60012CEAB /* machines */,
 				208368CD2A8E5BDB00E47E0B /* CPU */,
 				2083689C2A8E597400E47E0B /* b2t80sApp.swift */,
@@ -219,6 +231,9 @@
 				20A67AE42A9DE1E40012CEAB /* 48k.swift */,
 				20A67AE62A9DEA200012CEAB /* 48k.rom */,
 				20A67AE82A9E06AB0012CEAB /* ula.swift */,
+				20C5EACC2AA094B90027E715 /* ula_key.swift */,
+				20759FF62AA34CC200E0969D /* cassete.swift */,
+				20759FF82AA34EE700E0969D /* tap.swift */,
 			);
 			path = zxspectrum;
 			sourceTree = "<group>";
@@ -234,10 +249,12 @@
 		20C8C37F2A8F631900188246 /* Z80 */ = {
 			isa = PBXGroup;
 			children = (
+				20A5181F2AA4A1AD00F04BB8 /* pacman.tap */,
 				209C1EDD2A936E960005F128 /* tests.in */,
 				209C1EDC2A936E960005F128 /* tests.out */,
 				20C8C3842A8F688200188246 /* zexdocsmall.cim */,
 				20C8C3802A8F635800188246 /* z80Tests.swift */,
+				20A518212AA4A1CC00F04BB8 /* tapTests.swift */,
 			);
 			path = Z80;
 			sourceTree = "<group>";
@@ -357,6 +374,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				209C1EDE2A936E960005F128 /* tests.out in Resources */,
+				20A518202AA4A1AD00F04BB8 /* pacman.tap in Resources */,
 				20C8C3852A8F69CF00188246 /* zexdocsmall.cim in Resources */,
 				209C1EDF2A936E960005F128 /* tests.in in Resources */,
 			);
@@ -378,10 +396,12 @@
 			files = (
 				20C8C3892A8F7D3A00188246 /* utils.swift in Sources */,
 				20C8C38B2A8F7EE400188246 /* scheduler.swift in Sources */,
+				20C5EACD2AA094B90027E715 /* ula_key.swift in Sources */,
 				20A67ADE2A9B6AC60012CEAB /* registers.swift in Sources */,
 				2083689F2A8E597400E47E0B /* ContentView.swift in Sources */,
 				20A67AE92A9E06AB0012CEAB /* ula.swift in Sources */,
 				204AC99A2A9E295C008FF2F8 /* bitmap.swift in Sources */,
+				20759FF72AA34CC200E0969D /* cassete.swift in Sources */,
 				20C8C3932A92154100188246 /* test.swift in Sources */,
 				2083689D2A8E597400E47E0B /* b2t80sApp.swift in Sources */,
 				20C8C3872A8F6DDF00188246 /* bus.swift in Sources */,
@@ -391,6 +411,7 @@
 				20C8C38F2A8F8B3A00188246 /* ops.swift in Sources */,
 				20C8C3912A8FA25300188246 /* opsCodes.swift in Sources */,
 				20C8C38D2A8F7FD800188246 /* types.swift in Sources */,
+				20759FF92AA34EE700E0969D /* tap.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -399,6 +420,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				20C8C3812A8F635800188246 /* z80Tests.swift in Sources */,
+				20A518222AA4A1CC00F04BB8 /* tapTests.swift in Sources */,
 				208368AF2A8E597600E47E0B /* b2t80sTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -547,6 +569,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = b2t80s/b2t80s.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -555,6 +579,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = b2t80s/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -563,6 +588,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.laullon.b2t80s;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 			};
@@ -574,6 +600,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = b2t80s/b2t80s.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -582,6 +610,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = b2t80s/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -590,6 +619,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.laullon.b2t80s;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 			};
@@ -600,6 +630,8 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 3H78SDLZBC;
@@ -608,6 +640,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.laullon.b2t80sTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/b2t80s.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/b2t80s";
@@ -619,6 +652,8 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 3H78SDLZBC;
@@ -627,6 +662,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.laullon.b2t80sTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/b2t80s.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/b2t80s";
@@ -637,6 +673,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 3H78SDLZBC;
@@ -654,6 +691,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 3H78SDLZBC;

@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Scheduler {
+class Scheduler {
     var elemets :[z80op?] = Array(repeating: nil, count: 0x10)
     var e :UInt8 = 0
     var i :UInt8 = 0
@@ -16,7 +16,7 @@ struct Scheduler {
         return i == e
     }
     
-    mutating func append(_ ops: z80op...) {
+    func append(_ ops: z80op...) {
         for op in ops {
             elemets[Int(e)] = op
             e += 1
@@ -28,7 +28,8 @@ struct Scheduler {
         return elemets[Int(i)]!
     }
     
-    mutating func next() {
+    func next() {
+        elemets[Int(i)] = nil
         i += 1
         i &= 0x0F
     }

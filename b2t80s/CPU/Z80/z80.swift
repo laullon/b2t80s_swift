@@ -12,7 +12,8 @@ class z80 {
     var scheduler = Scheduler()
     var bus :Bus
     var traps :[UInt16: CPUTrap] = [:]
-    var wait :Bool = false
+    var wait :Bool = true
+    var waitOnNext :Bool = false
     var doInterrupt :Bool = false
     var halt :Bool = false
     var pushF :z80EXECf?
@@ -218,6 +219,17 @@ class z80 {
             }
         }
         
+        if scheduler.isEmpty() {
+            if doInterrupt {
+                execInterrupt()
+            } else {
+                newInstruction()
+            }
+        }
+
+        scheduler.first().tick(self)
+        fetched.ts += 1
+
         if scheduler.first().isDone() {
             scheduler.next()
             if scheduler.isEmpty() {
@@ -225,17 +237,9 @@ class z80 {
                 if log.count > 10 {
                     log.remove(at: 0)
                 }
-//                print("-> \(fetched.pc.toHex()) - \(fetched.op.name)")
-//                print("\t\t\t\t\t\t\t\t\t\(regs)")
-                if doInterrupt {
-                    execInterrupt()
-                } else {
-                    newInstruction()
-                }
+                wait = waitOnNext
             }
         }
-        scheduler.first().tick(self)
-        fetched.ts += 1
     }
     
     func execInterrupt() {
@@ -254,19 +258,20 @@ class z80 {
                 })
                 scheduler.append(code)
             case 2:
-                ()
-//                let code = Exec(l: 7, f: {cpu in
-//                    cpu.pushToStack(regs.PC, {cpu in
-//                        let pos = uint16(cpu.regs.I)<<8 + 0xff
-//                        let mr1 = MR(pos, {cpu, data in cpu.regs.PC = uint16(data) << 8 })
-//                        let mr2 = MR(pos, {cpu, data in cpu.regs.PC |= uint16(data) })
-//                        cpu.scheduler.append(mr1, mr2)
-//                    })
-//                })
-//                scheduler.append(code)
+                let code = Exec(l: 7, f: {cpu in
+                    cpu.pushToStack(self.regs.PC, {cpu in
+                        let pos = uint16(cpu.regs.I)<<8 + 0xff
+                        let mr1 = MR(pos, {cpu, data in cpu.regs.PC = uint16(data) << 8 })
+                        let mr2 = MR(pos, {cpu, data in cpu.regs.PC |= uint16(data) })
+                        cpu.scheduler.append(mr1, mr2)
+                    })
+                })
+                scheduler.append(code)
             default:
                 fatalError()
             }
+        } else {
+            newInstruction()
         }
     }
     
@@ -294,18 +299,16 @@ class z80 {
         //        if debugger != nil {
         //            debugger.Eval(regs.PC)
         //        }
-        fetched.ts = 0
-        fetched.n = 0
-        fetched.nn = 0
-        fetched.opCode = 0
-        fetched.prefix = 0
+        fetched = FetchedData(op: bogusOpCode)
         fetched.pc = regs.PC
         indexIdx = 0
     }
     
     func doTraps() {
         if let trap = traps[regs.PC] {
+            wait = true
             trap(self)
+            wait = false
         }
     }
     

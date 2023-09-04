@@ -10,7 +10,7 @@ import Combine
 
 struct ContentView: View {
     var monitor: Monitor
-    var cpu: z80
+    var machine: zx48k
     
     var body: some View {
         VStack {
@@ -18,32 +18,49 @@ struct ContentView: View {
             HStack {
                 Display(monitor: monitor)
                 Divider()
-                Debugger(cpu: cpu)
+                Debugger(cpu: machine.cpu)
             }
             Divider()
             Text("FPS").fixedSize()
+        }.onAppear() {
+            NSEvent.addLocalMonitorForEvents(matching: [.keyDown,.keyUp]) { (e) -> NSEvent? in
+                if e.modifierFlags.contains(.command) {
+                    return e;
+                }
+                if !e.isARepeat{
+                    machine.ula.OnKey(e)
+                }
+                return nil
+            }
         }
     }
 }
 
-//struct ContentView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        ContentView(monitor: Monitor(),cpu: z80(FackeBus()))
-//    }
-//}
-
 struct Debugger : View {
     var cpu: z80
     @StateObject var debugerUpdater:DebugerUpdater
-
+    
     init(cpu: z80){
         self.cpu = cpu
         _debugerUpdater = StateObject(wrappedValue: DebugerUpdater(cpu: cpu))
-
+        
     }
     
     var body: some View {
         VStack{
+            HStack{
+                Button("Stop") {
+                    cpu.waitOnNext = true
+                }.disabled(cpu.wait || cpu.waitOnNext)
+                Button("Step") {
+                    cpu.wait = false
+                    cpu.waitOnNext = true
+                }.disabled(!cpu.wait)
+                Button("continue") {
+                    cpu.waitOnNext = false
+                    cpu.wait = false
+                }.disabled(!cpu.wait)
+            }
             Grid(alignment: .leading) {
                 GridRow {
                     Text("A:")
@@ -95,7 +112,7 @@ struct Debugger : View {
                 GridRow {
                     Divider()
                         .gridCellColumns(7)
-                     .gridCellUnsizedAxes(.horizontal)
+                        .gridCellUnsizedAxes(.horizontal)
                 }
                 GridRow {
                     VStack(alignment: .leading) {
@@ -104,14 +121,14 @@ struct Debugger : View {
                         Text(debugerUpdater.next).padding(.top).padding(.bottom).foregroundColor(.blue)
                         Text(debugerUpdater.diss)
                             .lineLimit(10)
-
+                        
                     }.gridCellColumns(7)
                         .fixedSize()
                 }
             }
+            .font(Font.system(size: 18).monospaced())
         }
         .fixedSize()
-        .font(Font.system(size: 18).monospaced())
         .padding()
     }
 }
@@ -156,7 +173,7 @@ class DebugerUpdater: ObservableObject {
     var cpu: z80
     var next = ""
     var diss = ""
-
+    
     init(cpu: z80){
         self.cpu = cpu
         start()
@@ -173,6 +190,9 @@ class DebugerUpdater: ObservableObject {
 }
 
 private class FackeBus: Bus{
+    func writeToMemory(_ addr: UInt16, _ data: UInt8) {
+    }
+    
     var addr: UInt16=0
     
     var data: UInt8=0

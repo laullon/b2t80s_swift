@@ -14,7 +14,6 @@ final class z80Tests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
         continueAfterFailure = false
     }
 
@@ -420,6 +419,14 @@ func printChar(_ cpmScreen: inout [UInt8], _ cpu: z80) {
 }
 
 class DummyBus:Bus{
+    func writeToMemory(_ addr: UInt16, _ data: UInt8) {
+        fatalError()
+    }
+    
+    func readVideoMemory(_ addr: UInt16) -> UInt8 {
+        fatalError()
+    }
+    
     var mem  :[UInt8]
     var addr :UInt16 = 0
     var data :UInt8 = 0

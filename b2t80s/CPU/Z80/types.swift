@@ -21,7 +21,7 @@ protocol z80op {
 }
 
 
-struct FetchedData {
+class FetchedData {
     var pc     :UInt16 = 0
     var prefix :UInt16 = 0
     var opCode :UInt8 = 0

@@ -76,10 +76,10 @@ var z80OpsCodeTable :[opCode] = [
 
     opCode("DJNZ d", 0xFF, 0x10, 2, [mrNpc(f: {cpu in ()}), Exec(l: 1, f: djnz)], {cpu in ()}),
     opCode("JR d", 0xFF, 0x18, 2, [mrNpc(f: {cpu in ()}), Exec(l: 5, f: jr)], {cpu in ()}),
-    opCode("JRNZ d", 0xFF, 0x20, 2, [mrNpc(f: jrnz)], {cpu in ()}),
-    opCode("JRZ d", 0xFF, 0x28, 2, [mrNpc(f: jrz)], {cpu in ()}),
-    opCode("JRNC d", 0xFF, 0x30, 2, [mrNpc(f: jrnc)], {cpu in ()}),
-    opCode("JRC d", 0xFF, 0x38, 2, [mrNpc(f: jrc)], {cpu in ()}),
+    opCode("JR NZ d", 0xFF, 0x20, 2, [mrNpc(f: jrnz)], {cpu in ()}),
+    opCode("JR Z d", 0xFF, 0x28, 2, [mrNpc(f: jrz)], {cpu in ()}),
+    opCode("JR NC d", 0xFF, 0x30, 2, [mrNpc(f: jrnc)], {cpu in ()}),
+    opCode("JR C d", 0xFF, 0x38, 2, [mrNpc(f: jrc)], {cpu in ()}),
 
     opCode("JP nn", 0xFF, 0xC3, 3, [mrNNpc(f: {cpu in cpu.regs.PC = cpu.fetched.nn })], {cpu in ()}),
 
@@ -96,8 +96,14 @@ var z80OpsCodeTable :[opCode] = [
     opCode("EX DE, HL", 0xFF, 0xEB, 1, [], exDEhl),
 
     opCode("XOR n", 0xFF, 0xEE, 2, [mrNpc(f: {cpu in cpu.xor(cpu.fetched.n)})], {cpu in ()}),
-    opCode("DI", 0xFF, 0xF3, 1, [], {cpu in cpu.regs.IFF1 = false; cpu.regs.IFF2 = false }),
-    opCode("EI", 0xFF, 0xFb, 1, [], {cpu in cpu.regs.IFF1 = true; cpu.regs.IFF2 = true }),
+    opCode("DI", 0xFF, 0xF3, 1, [], {cpu in
+        cpu.regs.IFF1 = false;
+        cpu.regs.IFF2 = false }),
+    opCode("EI", 0xFF, 0xFb, 1, [], {cpu in
+        cpu.regs.IFF1 = true;
+        cpu.regs.IFF2 = true
+        
+    }),
     opCode("LD SP, HL", 0xFF, 0xF9, 1, [Exec(l: 2, f: {cpu in cpu.regs.SP = (cpu.regs.HL) })], {cpu in ()}),
     opCode("CP n", 0xFF, 0xFe, 2, [mrNpc(f: {cpu in cpu.cp(cpu.fetched.n)})], {cpu in ()}),
 

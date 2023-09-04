@@ -6,10 +6,17 @@
 //
 
 import Foundation
+import SwiftUI
+import UniformTypeIdentifiers
+
+extension UTType {
+    public static let tap = UTType(importedAs: "com.laullon.b2t80s.tap")
+}
 
 class zx48k {
     let cpu = z80(ZXBus())
     let ula: ULA
+    var cassete: Cassete?
     
     var monitor: Monitor { get {return ula.monitor} set {ula.monitor = newValue} }
     
@@ -17,6 +24,40 @@ class zx48k {
         ula = ULA(cpu: cpu)
         cpu.bus.registerPort(mask: PortMask(mask: 0x00FF, value: 0x00FE), manager: ula)
         cpu.bus.registerPort(mask: PortMask(mask: 0x00FF, value: 0x00FF), manager: ula)
+        
+        cpu.RegisterTrap(pc: 0x056B, trap: { [self]z80 in
+            if cassete == nil {
+                DispatchQueue.main.asyncAndWait(execute: DispatchWorkItem(block: { openFile() }))
+            }
+            cassete!.loadDataBlock()
+        })
+        
+        //        cpu.RegisterTrap(0x12A9, ula.loadCommand)
+        
+        //        cpu.RegisterTrap(pc: 0x12A0, trap: {cpu in
+        //            cpu.regs.PC = 0x056b
+        //        })
+        //
+        //        cpu.RegisterTrap(pc: 0x056b, trap: {cpu in
+        //            cpu.regs.PC = 0x056b
+        //        })
+    }
+    
+    private func openFile() {
+        let op = NSOpenPanel()
+        op.allowedContentTypes = [.tap]
+        op.canCreateDirectories = true
+        op.isExtensionHidden = false
+        op.title = "Save your image"
+        op.message = "Choose a folder and a name to store the image."
+        op.nameFieldLabel = "Image file name:"
+        
+        let response = op.runModal()
+        if (response == .OK) {
+            let url = op.url!
+            cassete = Cassete(tap: try! Tap(url),cpu: self.cpu)
+        }
+        
     }
     
     func run() {
@@ -56,20 +97,28 @@ private class ZXBus: Bus {
         return men[page,pos]
     }
     
+    func writeToMemory(_ addr: UInt16, _ data: UInt8) {
+        let page = addr >> 14
+        let pos = addr & 0x3fff
+        men[page,pos] = data
+    }
+    
     func registerPort(mask: PortMask, manager: PortManager) {
         portsManager[mask] = manager
     }
     
     func readPort() {
-        var ok = false
+        var skip = false
         for (portMask, portManager) in portsManager {
             if (addr & portMask.mask) == portMask.value {
-                (data, ok) = portManager.readPort(addr)
+                (data, skip) = portManager.readPort(addr)
             }
         }
-        if !ok {
-            fatalError(String(format:"[ReadPort]-(no PM)-> port:0x%04X data:0x%04X\n", addr, data))
+        if !skip {
+            return
         }
+        print("[readPort]-(no PM)-> port:\(addr.toHex())")
+        data = 0xff
     }
     
     func writePort() {
@@ -81,7 +130,7 @@ private class ZXBus: Bus {
             }
         }
         if !ok {
-            fatalError(String(format:"[writePort]-(no PM)-> port:0x%04X data:0x%04X\n", addr, data))
+            fatalError("[writePort]-(no PM)-> port:\(addr.toHex()) data:\(data.toHex())")
         }
     }
     

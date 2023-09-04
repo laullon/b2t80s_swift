@@ -16,7 +16,7 @@ protocol Bus {
     func readMemory()
     func writeMemory()
     func readVideoMemory(_ addr: UInt16) -> UInt8
-
+    func writeToMemory(_ addr: UInt16,_ data: UInt8) 
     func registerPort(mask: PortMask, manager: PortManager)
     func readPort()
     func writePort()
