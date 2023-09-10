@@ -12,7 +12,7 @@ class z80 {
     var scheduler = Scheduler()
     var bus :Bus
     var traps :[UInt16: CPUTrap] = [:]
-    var wait :Bool = true
+    var wait :Bool = false
     var waitOnNext :Bool = false
     var doInterrupt :Bool = false
     var halt :Bool = false

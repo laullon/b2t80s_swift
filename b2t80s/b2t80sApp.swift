@@ -12,7 +12,12 @@ struct b2t80sApp: App {
     var machine: zx48k
     
     init() {
-        let m = zx48k()
+        print(CommandLine.arguments)
+        var tap: String? = nil
+        if let idx = CommandLine.arguments.lastIndex(of: "-tap"){
+            tap = CommandLine.arguments[idx+1]
+}
+        let m = zx48k(tap: tap)
         machine = m
         if NSClassFromString("XCTestCase") == nil {
             DispatchQueue(label: "machine").async {
@@ -23,7 +28,7 @@ struct b2t80sApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView(monitor: machine.monitor, machine:machine)
+            ContentView(machine:machine)
         }
     }
 }

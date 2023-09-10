@@ -17,30 +17,41 @@ class zx48k {
     let cpu = z80(ZXBus())
     let ula: ULA
     var cassete: Cassete?
-    
+    let t = DispatchSource.makeTimerSource()
+    var lastFrameTime: Double = 0
+
     var monitor: Monitor { get {return ula.monitor} set {ula.monitor = newValue} }
     
-    init() {
+    init(tap: String? = nil) {
         ula = ULA(cpu: cpu)
         cpu.bus.registerPort(mask: PortMask(mask: 0x00FF, value: 0x00FE), manager: ula)
         cpu.bus.registerPort(mask: PortMask(mask: 0x00FF, value: 0x00FF), manager: ula)
         
+//        if tap != nil {
+//            do {
+//                cassete = try Cassete(tap: Tap(URL(filePath: tap!)),cpu: self.cpu)
+//            } catch {
+//                print("Unexpected error: \(error).")
+//            }
+//        }
+        
         cpu.RegisterTrap(pc: 0x056B, trap: { [self]z80 in
             if cassete == nil {
-                DispatchQueue.main.asyncAndWait(execute: DispatchWorkItem(block: { openFile() }))
+                DispatchQueue.main.asyncAndWait(execute: DispatchWorkItem(block: { self.openFile() }))
             }
             cassete!.loadDataBlock()
         })
-        
-        //        cpu.RegisterTrap(0x12A9, ula.loadCommand)
-        
-        //        cpu.RegisterTrap(pc: 0x12A0, trap: {cpu in
-        //            cpu.regs.PC = 0x056b
-        //        })
-        //
-        //        cpu.RegisterTrap(pc: 0x056b, trap: {cpu in
-        //            cpu.regs.PC = 0x056b
-        //        })
+        var ks: [(UInt16,UInt8)] = [(0xFFFF,0x78),(0xFFFF,0x78),(0xFFFF,0x78),(0xFFFF,0x78),(0xFF09,0x78),
+                                    (0xFFFF,0x78),(0x1822,0x6A),(0xFFFF,0x78),(0xFFFF,0x78),(0xFFFF,0x78),
+                                    (0xFFFF,0x78),(0x1822,0x6A),(0xFFFF,0x78),(0xFF21,0x50)]
+        cpu.RegisterTrap(pc: 0x028E) { cpu in
+            if ks.count != 0{
+                let v = ks.removeFirst()
+                cpu.regs.DE = v.0
+                cpu.regs.F.SetByte(v.1)
+                cpu.regs.PC = 0x02BE
+            }
+        }
     }
     
     private func openFile() {
@@ -61,9 +72,18 @@ class zx48k {
     }
     
     func run() {
-        while true {
-            ula.tick()
-        }
+        let ticks = 3500000 / 1000
+        t.schedule(deadline: .now(),repeating: .milliseconds(1),leeway: .never)
+        t.setEventHandler(handler: { [self] in
+            let clock = ContinuousClock()
+            let result = clock.measure {
+                for _ in 0..<ticks{
+                    self.ula.tick()
+                }
+            }
+            lastFrameTime = (Double(result.components.attoseconds)/(1000000000000000))
+        })
+        t.activate()
     }
 }
 

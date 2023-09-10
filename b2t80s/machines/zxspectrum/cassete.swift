@@ -37,7 +37,7 @@ class Cassete {
         let startAddress = self.cpu.regs.IX
         print("Loading block to \(startAddress.toHex()) (\(data.count)")
         
-        print(data[0..<16].reduce("") {"\($0) \($1.toHex())"})
+//        prvint(data[0..<16].reduce("") {"\($0) \($1.toHex())"})
         
         cpu.wait = true
         let a = data[0]

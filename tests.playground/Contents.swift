@@ -1,4 +1,5 @@
 import Cocoa
+import SwiftUI
 
 var greeting = Data([0,1,2,3,4,5,6,7,8,9,10])
 
@@ -14,7 +15,6 @@ pp(greeting.subdata(in: range3))
 func pp (_ data: Data) {
     data[0]
 }
-
 
 //var m = zx48k()
 //
