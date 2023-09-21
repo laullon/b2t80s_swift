@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		203510B92AB0A8310069B16D /* sound.swift in Sources */ = {isa = PBXBuildFile; fileRef = 203510B82AB0A8310069B16D /* sound.swift */; };
 		203882972AA9E5C000878CD9 /* formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 203882962AA9E5C000878CD9 /* formatters.swift */; };
 		204AC99A2A9E295C008FF2F8 /* bitmap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 204AC9992A9E295C008FF2F8 /* bitmap.swift */; };
 		20759FF72AA34CC200E0969D /* cassete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20759FF62AA34CC200E0969D /* cassete.swift */; };
@@ -59,6 +60,7 @@
 
 /* Begin PBXFileReference section */
 		200C3B362A9F72DE00B03EE4 /* tests.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = tests.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		203510B82AB0A8310069B16D /* sound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = sound.swift; sourceTree = "<group>"; };
 		203882962AA9E5C000878CD9 /* formatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = formatters.swift; sourceTree = "<group>"; };
 		204AC9992A9E295C008FF2F8 /* bitmap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = bitmap.swift; sourceTree = "<group>"; };
 		20759FF62AA34CC200E0969D /* cassete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cassete.swift; sourceTree = "<group>"; };
@@ -245,6 +247,7 @@
 				20C5EACC2AA094B90027E715 /* ula_key.swift */,
 				20759FF62AA34CC200E0969D /* cassete.swift */,
 				20759FF82AA34EE700E0969D /* tap.swift */,
+				203510B82AB0A8310069B16D /* sound.swift */,
 			);
 			path = zxspectrum;
 			sourceTree = "<group>";
@@ -420,6 +423,7 @@
 				20A67ADC2A9A079E0012CEAB /* diss.swift in Sources */,
 				203882972AA9E5C000878CD9 /* formatters.swift in Sources */,
 				2094939F2AA78DD600938DA2 /* collapsible.swift in Sources */,
+				203510B92AB0A8310069B16D /* sound.swift in Sources */,
 				20C8C38F2A8F8B3A00188246 /* ops.swift in Sources */,
 				20C8C3912A8FA25300188246 /* opsCodes.swift in Sources */,
 				20C8C38D2A8F7FD800188246 /* types.swift in Sources */,

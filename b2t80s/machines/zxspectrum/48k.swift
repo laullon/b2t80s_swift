@@ -7,11 +7,6 @@
 
 import Foundation
 import SwiftUI
-import UniformTypeIdentifiers
-
-extension UTType {
-    public static let tap = UTType(importedAs: "com.laullon.b2t80s.tap")
-}
 
 class zx48k {
     let cpu = z80(ZXBus())
@@ -19,6 +14,15 @@ class zx48k {
     var cassete: Cassete?
     let t = DispatchSource.makeTimerSource()
     var lastFrameTime: Double = 0
+    
+    var volumen: Double {
+        get {
+            return ula.sound.volumen
+        }
+        set {
+            ula.sound.volumen = newValue
+        }
+    }
 
     var monitor: Monitor { get {return ula.monitor} set {ula.monitor = newValue} }
     
@@ -27,13 +31,13 @@ class zx48k {
         cpu.bus.registerPort(mask: PortMask(mask: 0x00FF, value: 0x00FE), manager: ula)
         cpu.bus.registerPort(mask: PortMask(mask: 0x00FF, value: 0x00FF), manager: ula)
         
-//        if tap != nil {
-//            do {
-//                cassete = try Cassete(tap: Tap(URL(filePath: tap!)),cpu: self.cpu)
-//            } catch {
-//                print("Unexpected error: \(error).")
-//            }
-//        }
+        if tap != nil {
+            do {
+                cassete = try Cassete(tap: Tap(URL(filePath: tap!)),cpu: self.cpu)
+            } catch {
+                print("Unexpected error: \(error).")
+            }
+        }
         
         cpu.RegisterTrap(pc: 0x056B, trap: { [self]z80 in
             if cassete == nil {

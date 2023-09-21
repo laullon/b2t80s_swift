@@ -8,15 +8,60 @@
 import SwiftUI
 import Combine
 
+
+struct StarOverlay: View {
+    @Binding var volumen: Double
+    @State private var collapsed: Bool = true
+    
+    var body: some View {
+        HStack {
+            Image(systemName: "speaker.wave.3", variableValue: volumen)
+                .symbolRenderingMode(.multicolor)
+                .imageScale(.large)
+            if !collapsed {
+                Slider(value: $volumen, in: 0...1)
+                    .controlSize(.mini)
+                    .frame(maxWidth: 200)
+            }
+        }
+        .onContinuousHover { phase in
+            withAnimation {
+                switch phase {
+                case .active:
+                    collapsed = false
+                case .ended:
+                    collapsed = true
+                }
+            }
+        }
+        .padding(.all,5)
+        .background(.white)
+        .cornerRadius(20) /// make the background rounded
+        .padding(.all,5)
+    }
+}
+
 struct ContentView: View {
     var machine: zx48k
     @State private var inDisplay: Bool = false
+    @AppStorage("volumen") private var volumen: Double = 0
+    @State private var showOverlay: Bool = false
+    @State private var showOverlayStarted = Date.now;
 
     var body: some View {
         HStack {
             Display(monitor: machine.monitor)
-                .onHover { hover in
-                    inDisplay = hover
+                .overlay(StarOverlay(volumen: $volumen).opacity(showOverlay ? 1 : 0), alignment: .bottomLeading)
+                .onContinuousHover { phase in
+                    switch phase {
+                    case .active:
+                        inDisplay = true
+                        showOverlay = true
+                        showOverlayStarted = Date.now
+                    case .ended:
+                        inDisplay = false
+                        showOverlay = false
+                    }
                 }
             Divider()
             Debugger(machine: machine)
@@ -24,10 +69,7 @@ struct ContentView: View {
         }
         .onAppear() {
             NSEvent.addLocalMonitorForEvents(matching: [.keyDown,.keyUp,]) { (e) -> NSEvent? in
-                if !inDisplay {
-                    return e;
-                }
-                if e.modifierFlags.contains(.command) {
+                if !inDisplay || e.modifierFlags.contains(.command) {
                     return e;
                 }
                 if !e.isARepeat{
@@ -35,15 +77,28 @@ struct ContentView: View {
                 }
                 return nil
             }
+            machine.volumen = volumen
+        }
+        .onChange(of: volumen) { newValue in
+            machine.volumen = newValue
+        }
+        .onAppear() {
+            Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [self] timer in
+                if showOverlayStarted.timeIntervalSinceNow < -5 {
+                    withAnimation {
+                        showOverlay = false
+                    }
+                }
+            }
         }
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView(machine: zx48k())
-    }
-}
+//struct ContentView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        ContentView(machine: zx48k())
+//    }
+//}
 
 struct DebugerButtoms: View {
     var cpu: z80
@@ -160,7 +215,7 @@ struct DebuggerDisassembler : View {
 struct DebuggerMemory : View {
     @ObservedObject var debugData: DebugData
     @Binding var menStart: UInt16
-
+    
     var body: some View {
         VStack(alignment: .leading) {
             HStack{
@@ -194,7 +249,7 @@ struct Debugger : View {
     
     @StateObject var debugData:DebugData = DebugData()
     @State private var menStart = UInt16(0x4000)
-
+    
     init(machine: zx48k){
         self.machine = machine
     }
@@ -221,7 +276,7 @@ struct Debugger : View {
                             Label("Search !!!!!", systemImage: "magnifyingglass")
                         }
                 }
-
+                
             }
             Divider()
             Text("FPS: \(debugData.fps)")
@@ -297,9 +352,11 @@ struct FDetail : View {
 
 struct Display : View {
     @StateObject var monitor: Monitor
+
     var placeholder: Image = Image(systemName: "globe")
     var body: some View {
         ( monitor.image == nil ? placeholder : monitor.image!)
+            .interpolation(.none)
             .resizable()
             .aspectRatio(contentMode: .fit)
     }

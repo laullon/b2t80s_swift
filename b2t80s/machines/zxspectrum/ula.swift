@@ -47,9 +47,6 @@ class ULA: PortManager {
     var scanlines: Int
     var displayStart: Int
     
-    var scanlinesBorder: [[BitmapColor]]
-    var pixlesData: [[UInt8]]
-    var pixlesAttr: [[UInt8]]
     var floatingBus: UInt8 = 0
     //
     //    cassette       cassette.Cassette
@@ -61,6 +58,10 @@ class ULA: PortManager {
     //
     
     var monitor = Monitor()
+    var bitmap = Bitmap(width: 448, height: 312, color: BitmapColor(r: 0xff, g: 0, b: 0, a: 0xff))
+
+    let sound = SoundEngine()
+    var soundFrame = 0
     
     init(cpu: z80) {
         self.cpu = cpu
@@ -99,18 +100,22 @@ class ULA: PortManager {
         keyboardRow[5] = 0x1f
         keyboardRow[6] = 0x1f
         keyboardRow[7] = 0x1f
-        
-        scanlinesBorder = Array(repeating: Array(repeating: BitmapColor(r: 0xff, g: 0xff, b: 0xff, a: 0xff), count: tsPerRow), count: scanlines)
-        pixlesData = Array(repeating: Array(repeating: UInt8(0), count: 32), count: 192)
-        pixlesAttr = Array(repeating: Array(repeating: UInt8(0), count: 32), count: 192)
     }
-    
     
     func tick() {
         //        // EAR
         //        if cassette != nil {
         //            ear = cassette.Ear()
         //        }
+        
+        // Sound
+        if soundFrame == 0 {
+            sound.tick(buzzer)
+        }
+        soundFrame += 1
+        if soundFrame == 50 {
+            soundFrame = 0
+        }
         
         // SCREEN
         var draw = false
@@ -122,7 +127,23 @@ class ULA: PortManager {
             floatingBus = 0xff
         }
         
-        scanlinesBorder[row][col] = borderColour
+        let rx = col * 2
+        let ry = row
+        var border = false
+        
+        if (ry < displayStart) || (ry >= (displayStart+192)) {
+            border = true
+        } else if rx < 48 || rx > 47+256 {
+            border = true
+        }
+        
+        if border && (col%4 == 0){
+            let x = Int(col) / 4
+            let px = (x*8)
+            for i in 0..<8 {
+                bitmap[px+i,row] = borderColour
+            }
+        }
         
         // CPU CLOCK
         if io {
@@ -140,33 +161,33 @@ class ULA: PortManager {
             addr |= ((y & 0b00000111) | 0b01000000) << 8
             addr |= ((y >> 3) & 0b00011000) << 8
             addr |= ((y << 2) & 0b11100000)
-            pixlesData[y][x] = cpu.bus.readVideoMemory(UInt16(addr + x))
-            
+            let pixles = cpu.bus.readVideoMemory(UInt16(addr + x))
+            floatingBus = pixles
+
             let attrAddr = UInt16(((y >> 3) * 32) + 0x5800)
-            pixlesAttr[y][x] = cpu.bus.readVideoMemory(attrAddr + UInt16(x))
-            floatingBus = pixlesAttr[y][x]
+            let attr = cpu.bus.readVideoMemory(attrAddr + UInt16(x))
+            
+            let px = (x*8)+48
+            for (i, c) in getPixelsColors(attr: attr, pixles: pixles).enumerated() {
+                bitmap[px+i,row] = c
+            }
         }
         
         col += 1
         if col == tsPerRow {
+            col = 0
             row += 1
             if row == scanlines {
                 row = 0
+                col = 24
                 cpu.doInterrupt = true
                 FrameDone()
             }
-            col = 0
         }
     }
     //
     func FrameDone() {
         frame = (frame + 1) & 0x1f
-        var bitmap = Bitmap(width: 352, height: 296, color: BitmapColor(r: 0xff, g: 0, b: 0, a: 0xff))
-        for y in 0..<296 {
-            for x in 0..<352 {
-                bitmap[x,y] = getPixel(x, y)
-            }
-        }
         monitor.image = Image(bitmap.cgImage(), scale: 1, label: Text(verbatim: ""))
         
         //            monitor.FrameDone()
@@ -200,58 +221,37 @@ class ULA: PortManager {
             //            }
             buzzer = ((data & 16) >> 4) != 0
             earActive = (data & 24) != 0
-            // println("earActive:", earActive, "buzzer:", buzzer)
+//            print("buzzer:", buzzer,"\t soundFrame:",soundFrame)
         } else {
             // log.Printf("[write] port:0x%02x data:0b%08b", port, data)
         }
         // log.Printf("[write] port:0x%02x data:0b%08b", port, data)
         // keyboardRow[port] = data
     }
-    //
-    func getPixel(_ orgx: Int, _ orgy: Int) -> BitmapColor {
-        var rx = orgx
-        var ry = orgy
-        var border = false
-        
-        if (ry < displayStart) || (ry >= (displayStart+192)) {
-            border = true
-        } else if rx < 48 || rx > 47+256 {
-            border = true
-        }
-        
-        if border {
-            // if ry == displayStart || ry == 80 {
-            //     return palette[0]
-            // }
-            return scanlinesBorder[ry][rx/8]
-        }
-        
-        ry -= Int(displayStart)
-        rx -= 48
-        
-        let x = rx >> 3
-        let b = rx & 0x07
-        
-        let attr = pixlesAttr[ry][x]
-        
+
+    func getPixelsColors(attr :UInt8, pixles: UInt8) -> [BitmapColor] {
         let flash = (attr & 0x80) == 0x80
         let brg = (attr & 0x40) >> 6
         let paper = palette[Int(((attr&0x38)>>3)+(brg*8))]
         let ink = palette[Int((attr&0x07)+(brg*8))]
         
-        var data = pixlesData[ry][x]
-        data = data << b
-        data &= 0b10000000
-        if flash && (frame&0x10 != 0) {
-            if data != 0 {
-                return paper
+        var colors = Array(repeating: palette[0], count: 8)
+        for b in 0..<8 {
+            var data = pixles
+            data = data << b
+            data &= 0b10000000
+            if flash && (frame&0x10 != 0) {
+                if data != 0 {
+                    colors[b] = paper
+                } else {
+                    colors[b] = ink
+                }
+            } else if data != 0 {
+                colors[b] = ink
+            } else {
+                colors[b] = paper
             }
-            return ink
         }
-        
-        if data != 0 {
-            return ink
-        }
-        return paper
+        return colors
     }
 }
