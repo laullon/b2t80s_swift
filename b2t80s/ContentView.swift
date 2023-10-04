@@ -9,63 +9,42 @@ import SwiftUI
 import Combine
 
 
-struct StarOverlay: View {
-    @Binding var volumen: Double
-    @State private var collapsed: Bool = true
+struct ContentView: View {
+    var machine: zx48k
+    
+    @AppStorage("volumen") private var volumen: Double = 0
+    @AppStorage("showDebuger") private var showDebuger = false
+    
+    @State private var inDisplay: Bool = false
+    @State private var showOverlay: Bool = false
+    @State private var showOverlayStarted = Date.now;
+    @State private var tapName = "pp";
     
     var body: some View {
         HStack {
-            Image(systemName: "speaker.wave.3", variableValue: volumen)
-                .symbolRenderingMode(.multicolor)
-                .imageScale(.large)
-            if !collapsed {
-                Slider(value: $volumen, in: 0...1)
-                    .controlSize(.mini)
-                    .frame(maxWidth: 200)
-            }
-        }
-        .onContinuousHover { phase in
-            withAnimation {
-                switch phase {
-                case .active:
-                    collapsed = false
-                case .ended:
-                    collapsed = true
-                }
-            }
-        }
-        .padding(.all,5)
-        .background(.white)
-        .cornerRadius(20) /// make the background rounded
-        .padding(.all,5)
-    }
-}
-
-struct ContentView: View {
-    var machine: zx48k
-    @State private var inDisplay: Bool = false
-    @AppStorage("volumen") private var volumen: Double = 0
-    @State private var showOverlay: Bool = false
-    @State private var showOverlayStarted = Date.now;
-
-    var body: some View {
-        HStack {
             Display(monitor: machine.monitor)
-                .overlay(StarOverlay(volumen: $volumen).opacity(showOverlay ? 1 : 0), alignment: .bottomLeading)
+                .overlay(ControlsOverlay(volumen: $volumen,
+                                         showDebuger: $showDebuger,
+                                         reset: machine.reset,
+                                         openFile: machine.openFile)
+                    .opacity(showOverlay ? 1 : 0), alignment: .bottomLeading)
                 .onContinuousHover { phase in
                     switch phase {
                     case .active:
                         inDisplay = true
                         showOverlay = true
                         showOverlayStarted = Date.now
+                        NSCursor.unhide()
                     case .ended:
                         inDisplay = false
                         showOverlay = false
                     }
                 }
-            Divider()
-            Debugger(machine: machine)
-                .fixedSize(horizontal: true, vertical: false)
+            if showDebuger {
+                Divider()
+                Debugger(machine: machine)
+                    .fixedSize(horizontal: true, vertical: false)
+            }
         }
         .onAppear() {
             NSEvent.addLocalMonitorForEvents(matching: [.keyDown,.keyUp,]) { (e) -> NSEvent? in
@@ -79,14 +58,17 @@ struct ContentView: View {
             }
             machine.volumen = volumen
         }
-        .onChange(of: volumen) { newValue in
-            machine.volumen = newValue
+        .onChange(of: volumen) {
+            machine.volumen = volumen
         }
         .onAppear() {
             Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [self] timer in
                 if showOverlayStarted.timeIntervalSinceNow < -5 {
                     withAnimation {
                         showOverlay = false
+                        if inDisplay{
+                            NSCursor.hide()
+                        }
                     }
                 }
             }
@@ -99,26 +81,6 @@ struct ContentView: View {
 //        ContentView(machine: zx48k())
 //    }
 //}
-
-struct DebugerButtoms: View {
-    var cpu: z80
-    
-    var body: some View {
-        HStack{
-            Button("Stop") {
-                cpu.waitOnNext = true
-            }.disabled(cpu.wait || cpu.waitOnNext)
-            Button("Step") {
-                cpu.wait = false
-                cpu.waitOnNext = true
-            }.disabled(!cpu.wait)
-            Button("continue") {
-                cpu.waitOnNext = false
-                cpu.wait = false
-            }.disabled(!cpu.wait)
-        }
-    }
-}
 
 struct DebuggerRegisters : View {
     @ObservedObject var debugData: DebugData
@@ -215,6 +177,7 @@ struct DebuggerDisassembler : View {
 struct DebuggerMemory : View {
     @ObservedObject var debugData: DebugData
     @Binding var menStart: UInt16
+    @State var symbol = Symbol(addr: 0, name: "")
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -228,6 +191,7 @@ struct DebuggerMemory : View {
                 TextField("Start", value: $menStart, formatter: HexFormatter())
                     .textFieldStyle(.roundedBorder)
                     .padding(.bottom, 5)
+                SymbolSelector(symbols: $debugData.symbols, selection: $symbol)
                 Button(">") {
                     menStart &+= 16
                 }
@@ -241,6 +205,9 @@ struct DebuggerMemory : View {
         }
         .fixedSize()
         .frame(maxWidth: .infinity, alignment:.leading)
+        .onChange(of: symbol) {
+            menStart = symbol.addr
+        }
     }
 }
 
@@ -249,14 +216,33 @@ struct Debugger : View {
     
     @StateObject var debugData:DebugData = DebugData()
     @State private var menStart = UInt16(0x4000)
+    @AppStorage("BreakPoints") private var bp: [BreakPoint] = []
+    
+    let wait: Binding<Bool>
+    let waitOnNext: Binding<Bool>
     
     init(machine: zx48k){
         self.machine = machine
+        wait = Binding<Bool>(
+            get: {
+                return machine.cpu.wait
+            }, set: { val in
+                machine.cpu.wait = val
+            }
+        )
+        
+        waitOnNext = Binding<Bool>(
+            get: {
+                return machine.cpu.waitOnNext
+            }, set: { val in
+                machine.cpu.waitOnNext = val
+            }
+        )
     }
     
     var body: some View {
         VStack{
-            DebugerButtoms(cpu: machine.cpu)
+            debuggerControls(waitOnNext: waitOnNext, wait: wait)
                 .padding()
             Divider()
             DebuggerRegisters(debugData: debugData)
@@ -267,16 +253,16 @@ struct Debugger : View {
                     .padding()
                 Divider()
                 TabView {
+                    BreakPointsView(breakPoints: $bp,symbols: $debugData.symbols)
+                        .frame(height:200)
+                        .tabItem {
+                            Text("Bookmarks")
+                        }
                     DebuggerMemory(debugData: debugData, menStart: $menStart)
                         .tabItem {
-                            Label("Memory", systemImage: "magnifyingglass")
-                        }
-                    Text("Search")
-                        .tabItem {
-                            Label("Search !!!!!", systemImage: "magnifyingglass")
+                            Text("Memory")
                         }
                 }
-                
             }
             Divider()
             Text("FPS: \(debugData.fps)")
@@ -328,7 +314,12 @@ struct Debugger : View {
                     str = "\(str)\n"
                 }
                 debugData.memory = str
+                debugData.symbols = machine.symbols
             }
+        }.onChange(of: bp) {
+            machine.breakPoints = bp.map({ bp in
+                bp.addr
+            })
         }
     }
 }
@@ -352,7 +343,7 @@ struct FDetail : View {
 
 struct Display : View {
     @StateObject var monitor: Monitor
-
+    
     var placeholder: Image = Image(systemName: "globe")
     var body: some View {
         ( monitor.image == nil ? placeholder : monitor.image!)
@@ -383,4 +374,5 @@ class DebugData: ObservableObject {
     @Published var spStack: [String] = Array(repeating: "", count: 4)
     
     @Published var memory: String = ""
+    @Published var symbols: [Symbol] = []
 }

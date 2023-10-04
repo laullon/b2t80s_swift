@@ -88,7 +88,7 @@ extension z80 {
             if f.op.len >= 3 {
                 pc &+= 1
                 f.n2 = self.bus.readVideoMemory(pc)
-                f.nn = (UInt16(f.n)<<8) | (UInt16(f.n2))
+                f.nn = (UInt16(f.n)) | (UInt16(f.n2)<<8)
             }
             if f.op.len > 3 {
                 fatalError()

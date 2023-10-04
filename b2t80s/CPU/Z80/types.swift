@@ -15,6 +15,7 @@ typealias z80INf =  (_ cpu: z80, _ data: UInt8)->()
 typealias z80Painter = (_ op: opCode, _ fetchedData: FetchedData)->(String)
 
 protocol z80op {
+    var t: UInt8 { get }
     func tick(_ cpu: z80)
     func isDone() -> Bool
     func reset() // TODO i hate this

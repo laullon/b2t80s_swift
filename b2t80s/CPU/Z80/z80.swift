@@ -15,6 +15,7 @@ class z80 {
     var wait :Bool = false
     var waitOnNext :Bool = false
     var doInterrupt :Bool = false
+    var doReset :Bool = false
     var halt :Bool = false
     var pushF :z80EXECf?
     var fetched = FetchedData(op: bogusOpCode)
@@ -35,14 +36,13 @@ class z80 {
     var halfcarrySubTable: [Bool] = [false, false, true, false, true, false, true, true]
     
     var log: [FetchedData] = Array()
+    
+    var breakPoints: [UInt16] = []
 
     init(_ bus: Bus){
         self.bus = bus
         initParityTable()
         initOpsCodeTables()
-        
-
-        scheduler.append(Fetch(lookup))
     }
     
     func initOpsCodeTables() {
@@ -205,10 +205,6 @@ class z80 {
     }
     
     func tick() {
-        if wait {
-            return
-        }
-        
         if halt {
             if doInterrupt {
                 halt = false
@@ -220,11 +216,31 @@ class z80 {
         }
         
         if scheduler.isEmpty() {
+            if doReset {
+                regs.F.SetByte(0xff)
+                regs.A = 0xff
+                regs.I = 0
+                regs.R = 0
+                regs.R7 = 0
+                regs.PC = 0
+                regs.SP = 0xffff
+                regs.IFF1 = false
+                regs.IFF2 = false
+                halt = false
+                doReset = false
+                return
+            }
+            
             if doInterrupt {
                 execInterrupt()
             } else {
                 newInstruction()
+                self.wait = self.breakPoints.contains(regs.PC)
             }
+        }
+        
+        if wait {
+            return
         }
 
         scheduler.first().tick(self)
@@ -296,9 +312,7 @@ class z80 {
     }
     
     func prepareForNewInstruction() {
-        //        if debugger != nil {
-        //            debugger.Eval(regs.PC)
-        //        }
+
         fetched = FetchedData(op: bogusOpCode)
         fetched.pc = regs.PC
         indexIdx = 0

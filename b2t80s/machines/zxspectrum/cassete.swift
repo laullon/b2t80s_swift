@@ -8,23 +8,27 @@
 import Foundation
 
 class Cassete {
-    var tap: Tap
+    var tap: Tap?
     var cpu: z80
     var nextBlogIdx = 0
     
-    init(tap: Tap, cpu: z80) {
-        self.tap = tap
+    init(cpu: z80) {
         self.cpu = cpu
     }
     
+    func rewind() {
+        nextBlogIdx = 0
+    }
+    
     func nextDataBlock() -> Data {
-        if nextBlogIdx == tap.blocks.count {
-            return Data()
+        if tap != nil {
+            if nextBlogIdx != tap!.blocks.count {
+                let b = tap!.blocks[nextBlogIdx]
+                nextBlogIdx += 1
+                return tap!.data.subdata(in: b.range)
+            }
         }
-        
-        let b = tap.blocks[nextBlogIdx]
-        nextBlogIdx += 1
-        return tap.data.subdata(in: b.range)
+        return Data()
     }
     
     func loadDataBlock() {

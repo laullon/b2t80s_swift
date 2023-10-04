@@ -740,7 +740,7 @@ func incIXYd(cpu: z80) {
     let addr = cpu.getIXYn(cpu.fetched.n)
     let mr = mr(addr, {cpu, data in
         var r = data
-        r += 1
+        r &+= 1
         let mw = mw(addr, r, {cpu in ()})
         cpu.regs.F.S = r&0x80 != 0
         cpu.regs.F.Z = r == 0

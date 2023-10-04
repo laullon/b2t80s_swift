@@ -11,9 +11,17 @@ import SwiftUI
 class zx48k {
     let cpu = z80(ZXBus())
     let ula: ULA
-    var cassete: Cassete?
+    var cassete: Cassete
     let t = DispatchSource.makeTimerSource()
     var lastFrameTime: Double = 0
+    
+    var symbols: [Symbol] = []
+    
+    let loadKeys: [(UInt16,UInt8)] = [(0xFFFF,0x78),(0xFFFF,0x78),(0xFFFF,0x78),(0xFFFF,0x78),(0xFF09,0x78),
+                                (0xFFFF,0x78),(0x1822,0x6A),(0xFFFF,0x78),(0xFFFF,0x78),(0xFFFF,0x78),
+                                (0xFFFF,0x78),(0x1822,0x6A),(0xFFFF,0x78),(0xFF21,0x50)]
+
+    var keysToPress: [(UInt16,UInt8)]?
     
     var volumen: Double {
         get {
@@ -23,6 +31,15 @@ class zx48k {
             ula.sound.volumen = newValue
         }
     }
+    
+    var breakPoints: [UInt16] {
+        get {
+            return cpu.breakPoints
+        }
+        set {
+            cpu.breakPoints = newValue
+        }
+    }
 
     var monitor: Monitor { get {return ula.monitor} set {ula.monitor = newValue} }
     
@@ -30,35 +47,44 @@ class zx48k {
         ula = ULA(cpu: cpu)
         cpu.bus.registerPort(mask: PortMask(mask: 0x00FF, value: 0x00FE), manager: ula)
         cpu.bus.registerPort(mask: PortMask(mask: 0x00FF, value: 0x00FF), manager: ula)
-        
+        cassete = Cassete(cpu: self.cpu)
+        keysToPress = loadKeys
+
         if tap != nil {
+            let url = URL(filePath: tap!)
             do {
-                cassete = try Cassete(tap: Tap(URL(filePath: tap!)),cpu: self.cpu)
+                cassete.tap = try Tap(url, symbols: &symbols)
             } catch {
                 print("Unexpected error: \(error).")
             }
         }
         
         cpu.RegisterTrap(pc: 0x056B, trap: { [self]z80 in
-            if cassete == nil {
+            if cassete.tap == nil {
                 DispatchQueue.main.asyncAndWait(execute: DispatchWorkItem(block: { self.openFile() }))
             }
-            cassete!.loadDataBlock()
+            cassete.loadDataBlock()
         })
-        var ks: [(UInt16,UInt8)] = [(0xFFFF,0x78),(0xFFFF,0x78),(0xFFFF,0x78),(0xFFFF,0x78),(0xFF09,0x78),
-                                    (0xFFFF,0x78),(0x1822,0x6A),(0xFFFF,0x78),(0xFFFF,0x78),(0xFFFF,0x78),
-                                    (0xFFFF,0x78),(0x1822,0x6A),(0xFFFF,0x78),(0xFF21,0x50)]
+        
         cpu.RegisterTrap(pc: 0x028E) { cpu in
-            if ks.count != 0{
-                let v = ks.removeFirst()
-                cpu.regs.DE = v.0
-                cpu.regs.F.SetByte(v.1)
-                cpu.regs.PC = 0x02BE
+            if self.keysToPress != nil {
+                if self.keysToPress!.count != 0{
+                    let v = self.keysToPress!.removeFirst()
+                    cpu.regs.DE = v.0
+                    cpu.regs.F.SetByte(v.1)
+                    cpu.regs.PC = 0x02BE
+                }
             }
         }
     }
     
-    private func openFile() {
+    func reset() {
+        cpu.doReset = true
+        cassete.rewind()
+        keysToPress = loadKeys
+    }
+    
+    func openFile() {
         let op = NSOpenPanel()
         op.allowedContentTypes = [.tap]
         op.canCreateDirectories = true
@@ -70,13 +96,12 @@ class zx48k {
         let response = op.runModal()
         if (response == .OK) {
             let url = op.url!
-            cassete = Cassete(tap: try! Tap(url),cpu: self.cpu)
+            cassete.tap = try! Tap(url,symbols: &symbols)
         }
-        
     }
     
     func run() {
-        let ticks = 3500000 / 1000
+        let ticks = 3_500_000 / 1000
         t.schedule(deadline: .now(),repeating: .milliseconds(1),leeway: .never)
         t.setEventHandler(handler: { [self] in
             let clock = ContinuousClock()

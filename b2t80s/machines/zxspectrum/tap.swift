@@ -40,9 +40,11 @@ class Tap {
     var blocks :[DataBlock] = []
     var actualBlock: Int = 0
     var data: Data
+    var name: String
     
-    init(_ url: URL) throws {
+    init(_ url: URL, symbols: inout [Symbol]) throws {
 //        let filePath = Bundle.main.url(forResource: "pacman", withExtension: "tap")!
+        name = url.lastPathComponent
         data = try Data(contentsOf: url)
         
         let header = String(decoding: data.subdata(in: 0..<7),as: UTF8.self)
@@ -79,6 +81,24 @@ class Tap {
                 blocks.append(block)
                 start = block.range.endIndex
             } while data.count > start
+        }
+        
+        do {
+            let symUurl = url.deletingPathExtension().appendingPathExtension("symbol")
+            let data = try String(contentsOf: symUurl)
+            let lines = data.components(separatedBy: .newlines)
+            for line in lines {
+                let comps = line.replacingOccurrences(of: "\t", with: " ").split(separator: " ")
+                if comps.count > 0 {
+                    let sym = String(comps[0])
+                    if !sym.hasPrefix("0") {
+                        let addr = UInt16(comps[2].trimmingCharacters(in: CharacterSet(charactersIn: "H")), radix: 16)!
+                        symbols.append(Symbol(addr: addr, name: sym))
+                    }
+                }
+            }
+        } catch {
+            print("Unexpected error: \(error).")
         }
     }
     

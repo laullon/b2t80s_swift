@@ -103,6 +103,9 @@ class ULA: PortManager {
     }
     
     func tick() {
+        if cpu.wait {
+            return
+        }
         //        // EAR
         //        if cassette != nil {
         //            ear = cassette.Ear()

@@ -20,7 +20,7 @@ class HexFormatter: Formatter {
         if let v = (obj as? UInt16){
             return v.toHex();
         }else{
-            return "0"
+            return ""
         }
     }
 }
