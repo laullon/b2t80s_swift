@@ -8,7 +8,11 @@
 import Foundation
 
 class Cassete {
-    var tap: Tap?
+    var tap: Tap? {
+        didSet {
+            nextBlogIdx = 0
+        }
+    }
     var cpu: z80
     var nextBlogIdx = 0
     

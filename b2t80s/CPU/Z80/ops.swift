@@ -1492,7 +1492,7 @@ func daa(cpu: z80) {
     } else {
         cpu.addA(add)
     }
-    cpu.regs.F.S = Int8(cpu.regs.A) < 0
+    cpu.regs.F.S = cpu.regs.A&0x80 != 0
     cpu.regs.F.Z = cpu.regs.A == 0
     cpu.regs.F.P = cpu.parityTable[Int(cpu.regs.A)]
     cpu.regs.F.C = c

@@ -34,14 +34,13 @@ struct ContentView: View {
                         inDisplay = true
                         showOverlay = true
                         showOverlayStarted = Date.now
-                        NSCursor.unhide()
                     case .ended:
                         inDisplay = false
                         showOverlay = false
                     }
                 }
             if showDebuger {
-                Divider()
+                Spacer()
                 Debugger(machine: machine)
                     .fixedSize(horizontal: true, vertical: false)
             }
@@ -67,7 +66,7 @@ struct ContentView: View {
                     withAnimation {
                         showOverlay = false
                         if inDisplay{
-                            NSCursor.hide()
+                            NSCursor.setHiddenUntilMouseMoves(true)
                         }
                     }
                 }
@@ -220,6 +219,7 @@ struct Debugger : View {
     
     let wait: Binding<Bool>
     let waitOnNext: Binding<Bool>
+    let waitOnNextInterruption: Binding<Bool>
     
     init(machine: zx48k){
         self.machine = machine
@@ -238,11 +238,19 @@ struct Debugger : View {
                 machine.cpu.waitOnNext = val
             }
         )
+        
+        waitOnNextInterruption = Binding<Bool>(
+            get: {
+                return machine.cpu.waitOnNextInterruption
+            }, set: { val in
+                machine.cpu.waitOnNextInterruption = val
+            }
+        )
     }
     
     var body: some View {
         VStack{
-            debuggerControls(waitOnNext: waitOnNext, wait: wait)
+            DebuggerControls(waitOnNext: waitOnNext, waitOnNextInterruption: waitOnNextInterruption, wait: wait)
                 .padding()
             Divider()
             DebuggerRegisters(debugData: debugData)
@@ -253,6 +261,17 @@ struct Debugger : View {
                     .padding()
                 Divider()
                 TabView {
+                    ULAView(bitmap: machine.ula.bitmap)
+                        .tabItem {
+                            Text("ULA")
+                        }
+                    SpritesView(symbols: $debugData.symbols, getData: { bytes in
+                        return machine.cpu.bus.getBlock(addr: 0x08601, length: uint16(bytes))
+                    })
+                    .frame(height:200)
+                    .tabItem {
+                        Text("Bookmarks")
+                    }
                     BreakPointsView(breakPoints: $bp,symbols: $debugData.symbols)
                         .frame(height:200)
                         .tabItem {

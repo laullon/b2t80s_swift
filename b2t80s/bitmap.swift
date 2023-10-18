@@ -14,20 +14,22 @@ struct BitmapColor {
 
 struct Bitmap {
     var width: Int
+    var height: Int
     var pixels: [BitmapColor]
-    
-    var height: Int {
-        pixels.count / width
-    }
     
     init(width: Int, height: Int, color: BitmapColor) {
         self.width = width
-        pixels = Array(repeating: color, count: width * height)
+        self.height = height
+        pixels = Array(repeating: color, count: (width * height))
     }
     
     subscript(x: Int, y: Int) -> BitmapColor {
         get { pixels[y * width + x] }
-        set { pixels[y * width + x] = newValue }
+        set { 
+            if (x<width) && (y<height){
+                pixels[(y * width) + x] = newValue
+            }
+        }
     }
     
     func cgImage() -> CGImage {

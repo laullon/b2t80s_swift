@@ -14,7 +14,15 @@ class z80 {
     var traps :[UInt16: CPUTrap] = [:]
     var wait :Bool = false
     var waitOnNext :Bool = false
-    var doInterrupt :Bool = false
+    var waitOnNextInterruption :Bool = false
+    var doInterrupt :Bool = false {
+        didSet {
+            if doInterrupt == false {
+                interruptDone = false
+            }
+        }
+    }
+    var interruptDone :Bool = false
     var doReset :Bool = false
     var halt :Bool = false
     var pushF :z80EXECf?
@@ -206,7 +214,7 @@ class z80 {
     
     func tick() {
         if halt {
-            if doInterrupt {
+            if doInterrupt && !interruptDone {
                 halt = false
                 regs.PC &+= 1
                 execInterrupt()
@@ -231,7 +239,7 @@ class z80 {
                 return
             }
             
-            if doInterrupt {
+            if doInterrupt && !interruptDone {
                 execInterrupt()
             } else {
                 newInstruction()
@@ -259,8 +267,13 @@ class z80 {
     }
     
     func execInterrupt() {
+        if waitOnNextInterruption {
+            print("1")
+            waitOnNextInterruption = false
+            waitOnNext = true
+        }
         prepareForNewInstruction()
-        doInterrupt = false
+        interruptDone = true
         
         if regs.IFF1 {
             regs.IFF1 = false

@@ -90,8 +90,12 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/glaullon/zxspectrum/pacman-zx/pacman.tap"
+            argument = "/Users/glaullon/Downloads/BorderTronCC16K.tap"
             isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/glaullon/zxspectrum/pacman-zx/pacman.tap"
+            isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>
    </LaunchAction>

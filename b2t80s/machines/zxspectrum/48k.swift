@@ -179,7 +179,7 @@ private class ZXBus: Bus {
             }
         }
         if !ok {
-            fatalError("[writePort]-(no PM)-> port:\(addr.toHex()) data:\(data.toHex())")
+            print("[writePort]-(no PM)-> port:\(addr.toHex()) data:\(data.toHex())")
         }
     }
     
