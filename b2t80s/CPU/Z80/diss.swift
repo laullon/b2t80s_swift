@@ -35,7 +35,6 @@ func dis(_ op: opCode, _ fetched: FetchedData)->(String) {
     let y = Int(fetched.opCode & 0b00111000) >> 3
     let z = Int(fetched.opCode & 0b00000111)
     let p = Int(fetched.opCode & 0b00110000) >> 4
-    
     ins.replace("nn", with: fetched.nn.toHex())
     ins.replace("n", with: fetched.n.toHex())
     ins.replace("rp[p]", with: rp[p])
@@ -43,7 +42,7 @@ func dis(_ op: opCode, _ fetched: FetchedData)->(String) {
     ins.replace("r[z]", with: r[z] ?? "x")
     ins.replace("cc[y]", with: cc[y])
     ins.replace("rp2[p]", with: rp2[p])
-    ins.replace("y*8", with: String("\(y*8)"))
+    ins.replace(" y*8", with: String("_\(UInt8(y*8).toHex())"))
     ins.replace("y", with: String("\(y)"))
 
     return "\(ins)";

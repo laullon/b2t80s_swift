@@ -8,7 +8,6 @@
 import SwiftUI
 import Combine
 
-
 struct ContentView: View {
     var machine: zx48k
     
@@ -173,43 +172,6 @@ struct DebuggerDisassembler : View {
     }
 }
 
-struct DebuggerMemory : View {
-    @ObservedObject var debugData: DebugData
-    @Binding var menStart: UInt16
-    @State var symbol = Symbol(addr: 0, name: "")
-    
-    var body: some View {
-        VStack(alignment: .leading) {
-            HStack{
-                Button("<<") {
-                    menStart &-= 16 * 16
-                }
-                Button("<") {
-                    menStart &-= 16
-                }
-                TextField("Start", value: $menStart, formatter: HexFormatter())
-                    .textFieldStyle(.roundedBorder)
-                    .padding(.bottom, 5)
-                SymbolSelector(symbols: $debugData.symbols, selection: $symbol)
-                Button(">") {
-                    menStart &+= 16
-                }
-                Button(">>") {
-                    menStart &+= 16 * 16
-                }
-            }
-            Text(debugData.memory)
-                .lineLimit(16)
-                .fixedSize()
-        }
-        .fixedSize()
-        .frame(maxWidth: .infinity, alignment:.leading)
-        .onChange(of: symbol) {
-            menStart = symbol.addr
-        }
-    }
-}
-
 struct Debugger : View {
     var machine: zx48k
     
@@ -261,6 +223,16 @@ struct Debugger : View {
                     .padding()
                 Divider()
                 TabView {
+                    BreakPointsView(breakPoints: $bp,symbols: $debugData.symbols)
+                        .frame(height:200)
+                        .tabItem {
+                            Text("BreakPoints")
+                        }
+                    DebuggerMemory(symbols: debugData.symbols) { start, bytes in
+                        return machine.cpu.bus.getBlock(addr: start, length: bytes)
+                    }.tabItem {
+                        Text("Memory")
+                    }
                     ULAView(bitmap: machine.ula.bitmap)
                         .tabItem {
                             Text("ULA")
@@ -270,17 +242,8 @@ struct Debugger : View {
                     })
                     .frame(height:200)
                     .tabItem {
-                        Text("Bookmarks")
+                        Text("Sprites")
                     }
-                    BreakPointsView(breakPoints: $bp,symbols: $debugData.symbols)
-                        .frame(height:200)
-                        .tabItem {
-                            Text("Bookmarks")
-                        }
-                    DebuggerMemory(debugData: debugData, menStart: $menStart)
-                        .tabItem {
-                            Text("Memory")
-                        }
                 }
             }
             Divider()

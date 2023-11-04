@@ -34,6 +34,7 @@ class FetchedData {
     
     init(op: opCode) {
         self.op = op
+        self.opCode = op.code
     }
 }
 

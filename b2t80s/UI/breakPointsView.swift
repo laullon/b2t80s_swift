@@ -23,14 +23,11 @@ struct BreakPointsView: View {
     @Binding var breakPoints: [BreakPoint]
     @Binding var symbols: [Symbol]
     @State var newSymbol = Symbol(addr: 0, name: "")
-    @State var newBreakPoint: String = ""
+    @State var newBreakPoint = ""
     
     var body: some View {
         VStack {
-            HStack {
-                TextField("0x0000 - label", text: $newBreakPoint)
-                SymbolSelector(symbols: $symbols, selection: $newSymbol)
-            }
+            AddrSelector(symbols: symbols, selection: $newBreakPoint)
             Table(breakPoints.sorted(by: <)){
                 TableColumn("") { mark in
                     Toggle("", isOn: Binding<Bool>(
@@ -61,7 +58,8 @@ struct BreakPointsView: View {
             breakPoints.append(BreakPoint(active: true, addr: newSymbol.addr, symbol: newSymbol.name))
         }
         .onChange(of: newBreakPoint) {
-            let comps = newBreakPoint.split(separator: " - ")
+            print("newBreakPoint:",newBreakPoint)
+            let comps = newBreakPoint.split(separator: " ")
             let addr = String(comps[0].trimmingPrefix("0x"))
             let sym = String(comps[optional: 1] ?? "")
             breakPoints.append(BreakPoint(active: true, addr: UInt16(addr, radix: 16)!, symbol: sym))
@@ -94,6 +92,6 @@ struct BreakPointsView: View {
         }
     )
     
-    return BreakPointsView(breakPoints: m,symbols: s)
+    return BreakPointsView(breakPoints: m,symbols: s).padding(10)
 }
 

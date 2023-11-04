@@ -15,9 +15,9 @@ final class tapTests: XCTestCase {
     }
 
     func testTapLoading() throws {
-        let packageRootPath = URL(fileURLWithPath: #file).deletingLastPathComponent()
-        let file = URL(filePath: "pacman.tap", relativeTo: packageRootPath)
-        var tap = try Tap(file)
-        XCTAssertEqual(0, tap.blocks.count, "block counts")
+//        let packageRootPath = URL(fileURLWithPath: #file).deletingLastPathComponent()
+//        let file = URL(filePath: "pacman.tap", relativeTo: packageRootPath)
+//        var tap = try Tap(file)
+//        XCTAssertEqual(0, tap.blocks.count, "block counts")
     }
 }

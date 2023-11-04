@@ -52,7 +52,7 @@ class z80 {
         initParityTable()
         initOpsCodeTables()
     }
-    
+
     func initOpsCodeTables() {
         for i in 0...255 {
             let code = UInt8(i)
@@ -268,7 +268,6 @@ class z80 {
     
     func execInterrupt() {
         if waitOnNextInterruption {
-            print("1")
             waitOnNextInterruption = false
             waitOnNext = true
         }
@@ -289,9 +288,13 @@ class z80 {
             case 2:
                 let code = Exec(l: 7, f: {cpu in
                     cpu.pushToStack(self.regs.PC, {cpu in
-                        let pos = uint16(cpu.regs.I)<<8 + 0xff
-                        let mr1 = MR(pos, {cpu, data in cpu.regs.PC = uint16(data) << 8 })
-                        let mr2 = MR(pos, {cpu, data in cpu.regs.PC |= uint16(data) })
+                        let pos = uint16(cpu.regs.I)<<8 + 0x00
+                        let mr1 = MR(pos, {cpu, data in
+                            cpu.regs.PC = uint16(data) }
+                        )
+                        let mr2 = MR(pos&+1, {cpu, data in
+                            cpu.regs.PC |= uint16(data) << 8}
+                        )
                         cpu.scheduler.append(mr1, mr2)
                     })
                 })

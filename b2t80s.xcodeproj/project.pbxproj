@@ -16,6 +16,8 @@
 		204AC99A2A9E295C008FF2F8 /* bitmap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 204AC9992A9E295C008FF2F8 /* bitmap.swift */; };
 		20759FF72AA34CC200E0969D /* cassete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20759FF62AA34CC200E0969D /* cassete.swift */; };
 		20759FF92AA34EE700E0969D /* tap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20759FF82AA34EE700E0969D /* tap.swift */; };
+		208184852AE12D5A008C3D47 /* misc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 208184842AE12D5A008C3D47 /* misc.swift */; };
+		208184872AE13C80008C3D47 /* DebuggerMemory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 208184862AE13C80008C3D47 /* DebuggerMemory.swift */; };
 		2083689D2A8E597400E47E0B /* b2t80sApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2083689C2A8E597400E47E0B /* b2t80sApp.swift */; };
 		2083689F2A8E597400E47E0B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2083689E2A8E597400E47E0B /* ContentView.swift */; };
 		208368A12A8E597500E47E0B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 208368A02A8E597500E47E0B /* Assets.xcassets */; };
@@ -36,7 +38,7 @@
 		20A67AE92A9E06AB0012CEAB /* ula.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20A67AE82A9E06AB0012CEAB /* ula.swift */; };
 		20B4118D2AC38B1600645F1C /* misc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20B4118C2AC38B1600645F1C /* misc.swift */; };
 		20B411902AC464DD00645F1C /* DebuggerControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20B4118F2AC464DD00645F1C /* DebuggerControls.swift */; };
-		20C4EF352AC5808400776D19 /* symbolSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20C4EF342AC5808400776D19 /* symbolSelector.swift */; };
+		20C4EF352AC5808400776D19 /* AddrSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20C4EF342AC5808400776D19 /* AddrSelector.swift */; };
 		20C5EACD2AA094B90027E715 /* ula_key.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20C5EACC2AA094B90027E715 /* ula_key.swift */; };
 		20C8C3812A8F635800188246 /* z80Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20C8C3802A8F635800188246 /* z80Tests.swift */; };
 		20C8C3852A8F69CF00188246 /* zexdocsmall.cim in Resources */ = {isa = PBXBuildFile; fileRef = 20C8C3842A8F688200188246 /* zexdocsmall.cim */; };
@@ -77,6 +79,8 @@
 		20759FF62AA34CC200E0969D /* cassete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cassete.swift; sourceTree = "<group>"; };
 		20759FF82AA34EE700E0969D /* tap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = tap.swift; sourceTree = "<group>"; };
 		20759FFA2AA393F600E0969D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		208184842AE12D5A008C3D47 /* misc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = misc.swift; sourceTree = "<group>"; };
+		208184862AE13C80008C3D47 /* DebuggerMemory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebuggerMemory.swift; sourceTree = "<group>"; };
 		208368992A8E597400E47E0B /* b2t80s.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = b2t80s.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2083689C2A8E597400E47E0B /* b2t80sApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = b2t80sApp.swift; sourceTree = "<group>"; };
 		2083689E2A8E597400E47E0B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -101,7 +105,7 @@
 		20A67AE82A9E06AB0012CEAB /* ula.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ula.swift; sourceTree = "<group>"; };
 		20B4118C2AC38B1600645F1C /* misc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = misc.swift; sourceTree = "<group>"; };
 		20B4118F2AC464DD00645F1C /* DebuggerControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebuggerControls.swift; sourceTree = "<group>"; };
-		20C4EF342AC5808400776D19 /* symbolSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = symbolSelector.swift; sourceTree = "<group>"; };
+		20C4EF342AC5808400776D19 /* AddrSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddrSelector.swift; sourceTree = "<group>"; };
 		20C5EACC2AA094B90027E715 /* ula_key.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ula_key.swift; sourceTree = "<group>"; };
 		20C8C3802A8F635800188246 /* z80Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = z80Tests.swift; sourceTree = "<group>"; };
 		20C8C3842A8F688200188246 /* zexdocsmall.cim */ = {isa = PBXFileReference; lastKnownFileType = file; path = zexdocsmall.cim; sourceTree = "<group>"; };
@@ -143,10 +147,11 @@
 			children = (
 				203FC8CC2AC2BFDD00F7E0A1 /* breakPointsView.swift */,
 				20B4118F2AC464DD00645F1C /* DebuggerControls.swift */,
-				20C4EF342AC5808400776D19 /* symbolSelector.swift */,
+				20C4EF342AC5808400776D19 /* AddrSelector.swift */,
 				200414122ACC41CA00DAD673 /* controlsOverlay.swift */,
 				20F6F7682ADDA11900E01F1A /* SpritesView.swift */,
 				20F6F76A2ADE9DAF00E01F1A /* ULAView.swift */,
+				208184862AE13C80008C3D47 /* DebuggerMemory.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -203,6 +208,7 @@
 			children = (
 				20C8C37E2A8F630900188246 /* CPU */,
 				208368AE2A8E597600E47E0B /* b2t80sTests.swift */,
+				208184842AE12D5A008C3D47 /* misc.swift */,
 			);
 			path = b2t80sTests;
 			sourceTree = "<group>";
@@ -443,7 +449,7 @@
 				2083689F2A8E597400E47E0B /* ContentView.swift in Sources */,
 				20A67AE92A9E06AB0012CEAB /* ula.swift in Sources */,
 				204AC99A2A9E295C008FF2F8 /* bitmap.swift in Sources */,
-				20C4EF352AC5808400776D19 /* symbolSelector.swift in Sources */,
+				20C4EF352AC5808400776D19 /* AddrSelector.swift in Sources */,
 				20759FF72AA34CC200E0969D /* cassete.swift in Sources */,
 				20C8C3932A92154100188246 /* test.swift in Sources */,
 				20B411902AC464DD00645F1C /* DebuggerControls.swift in Sources */,
@@ -462,6 +468,7 @@
 				203510B92AB0A8310069B16D /* sound.swift in Sources */,
 				2005EAC52AC58D1300472B64 /* opsCodes.swift in Sources */,
 				20C8C38D2A8F7FD800188246 /* types.swift in Sources */,
+				208184872AE13C80008C3D47 /* DebuggerMemory.swift in Sources */,
 				200414132ACC41CA00DAD673 /* controlsOverlay.swift in Sources */,
 				20759FF92AA34EE700E0969D /* tap.swift in Sources */,
 			);
@@ -472,6 +479,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				20C8C3812A8F635800188246 /* z80Tests.swift in Sources */,
+				208184852AE12D5A008C3D47 /* misc.swift in Sources */,
 				20A518222AA4A1CC00F04BB8 /* tapTests.swift in Sources */,
 				208368AF2A8E597600E47E0B /* b2t80sTests.swift in Sources */,
 			);
@@ -695,7 +703,7 @@
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 3H78SDLZBC;
 				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 13.3;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.laullon.b2t80sTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -718,7 +726,7 @@
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 3H78SDLZBC;
 				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 13.3;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.laullon.b2t80sTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";

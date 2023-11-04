@@ -91,11 +91,11 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/glaullon/Downloads/BorderTronCC16K.tap"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/glaullon/zxspectrum/pacman-zx/pacman.tap"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
    </LaunchAction>

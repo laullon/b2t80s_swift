@@ -48,12 +48,12 @@ class zx48k {
         cpu.bus.registerPort(mask: PortMask(mask: 0x00FF, value: 0x00FE), manager: ula)
         cpu.bus.registerPort(mask: PortMask(mask: 0x00FF, value: 0x00FF), manager: ula)
         cassete = Cassete(cpu: self.cpu)
-        keysToPress = loadKeys
 
         if tap != nil {
             let url = URL(filePath: tap!)
             do {
                 cassete.tap = try Tap(url, symbols: &symbols)
+                keysToPress = loadKeys
             } catch {
                 print("Unexpected error: \(error).")
             }
@@ -185,8 +185,10 @@ private class ZXBus: Bus {
     
     func getBlock(addr: uint16, length: uint16) -> [UInt8] {
         var res:[UInt8] = []
-        for a in addr..<(addr+length) {
+        var a = addr
+        while a != (addr&+length) {
             res.append(readVideoMemory(a))
+            a &+= 1
         }
         return res
     }

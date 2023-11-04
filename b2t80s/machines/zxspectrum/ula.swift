@@ -114,18 +114,20 @@ class ULA: PortManager {
         if cpu.wait {
             return
         }
+        
+        //        // EAR
+        //        if cassette != nil {
+        //            ear = cassette.Ear()
+        //        }
+        
+        // Sound
+        soundFrame += 1
+        if soundFrame == 50 {
+            soundFrame = 0
+            sound.tick(buzzer)
+        }
+
         for _ in 0..<2{
-            //        // EAR
-            //        if cassette != nil {
-            //            ear = cassette.Ear()
-            //        }
-            
-            // Sound
-            soundFrame += 1
-            if soundFrame == 50 {
-                soundFrame = 0
-                sound.tick(buzzer)
-            }
             
             // SCREEN
             let draw = col%8 == 0
