@@ -49,25 +49,5 @@ class HexFormatter: Formatter {
     }
 }
 
-extension UInt16 {
-    func toHex() -> String {
-        return String(format: "0x%04X", self)
-    }
-}
-
-extension UInt8 {
-    func toHex() -> String {
-        return String(format: "0x%02X", self)
-    }
-    func toBin() -> String {
-        var str = String(self, radix: 2)
-        str = String(repeating: "0", count: self.leadingZeroBitCount) + str
-        return "0b\(str)"
-    }
-    func toHexShort() -> String {
-        return String(format: "%02X", self)
-    }
-}
-
 
 

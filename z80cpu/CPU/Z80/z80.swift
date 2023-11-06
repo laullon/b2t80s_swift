@@ -28,15 +28,7 @@ class z80 {
     var pushF :z80EXECf?
     var fetched = FetchedData(op: bogusOpCode)
     var indexIdx :Int = 0
-    
-    var lookup :[opCode] = Array(repeating: bogusOpCode, count: 256)
-    var lookupCB :[opCode] = Array(repeating: bogusOpCode, count: 256)
-    var lookupDD :[opCode] = Array(repeating: bogusOpCode, count: 256)
-    var lookupED :[opCode] = Array(repeating: bogusOpCode, count: 256)
-    var lookupFD :[opCode] = Array(repeating: bogusOpCode, count: 256)
-    var lookupDDCB :[opCode] = Array(repeating: bogusOpCode, count: 256)
-    var lookupFDCB :[opCode] = Array(repeating: bogusOpCode, count: 256)
-    
+        
     var parityTable :[Bool] = Array(repeating: false, count: 0x100)
     var overflowAddTable: [Bool] = [false, false, false, true, true, false, false, false]
     var overflowSubTable: [Bool] = [false, true, false, false, false, false, true, false]
@@ -46,122 +38,12 @@ class z80 {
     var log: [FetchedData] = Array()
     
     var breakPoints: [UInt16] = []
+    
+    let ins = z80InstructionSet.shared
 
     init(_ bus: Bus){
         self.bus = bus
         initParityTable()
-        initOpsCodeTables()
-    }
-
-    func initOpsCodeTables() {
-        for i in 0...255 {
-            let code = UInt8(i)
-            for var op in z80OpsCodeTable {
-                if (code & op.mask) == op.code {
-                    op.code = code
-                    lookup[Int(code)] = op
-                }
-            }
-        }
-
-        // -----
-
-        for i in 0...255 {
-            let code = UInt8(i)
-            for var op in z80OpsCodeTableCB {
-                op.len += 1
-                if (code & op.mask) == op.code {
-                    op.code = code
-                    lookupCB[Int(code)] = op
-                }
-            }
-        }
-
-        // -----
-        for var op in z80OpsCodeTableDD {
-            op.len += 1
-        }
-        for i in 0...255 {
-            let code = UInt8(i)
-            for var op in z80OpsCodeTableDD {
-                if (code & op.mask) == op.code {
-                    op.code = code
-                    lookupDD[Int(code)] = op
-                }
-            }
-        }
-
-        // -----
-        for var op in z80OpsCodeTableED {
-            op.len += 1
-        }
-        for i in 0...255 {
-            let code = UInt8(i)
-            for var op in z80OpsCodeTableED {
-                if (code & op.mask) == op.code {
-                    op.code = code
-                    lookupED[Int(code)] = op
-                }
-            }
-        }
-
-        // -----
-        for var op in z80OpsCodeTableFD {
-            op.len += 1
-        }
-        for i in 0...255 {
-            let code = UInt8(i)
-            for var op in z80OpsCodeTableFD {
-                if (code & op.mask) == op.code {
-                    op.code = code
-                    lookupFD[Int(code)] = op
-                }
-            }
-        }
-
-        // -----
-        for var op in z80OpsCodeTableDDCB {
-            op.len += 2
-        }
-        for i in 0...255 {
-            let code = UInt8(i)
-            for var op in z80OpsCodeTableDDCB {
-                if (code & op.mask) == op.code {
-                    op.code = code
-                    lookupDDCB[Int(code)] = op
-                }
-            }
-        }
-
-        // -----
-        for var op in z80OpsCodeTableFDCB {
-            op.len += 2
-        }
-        for i in 0...255 {
-            let code = UInt8(i)
-            for var op in z80OpsCodeTableFDCB {
-                if (code & op.mask) == op.code {
-                    op.code = code
-                    lookupFDCB[Int(code)] = op
-                }
-            }
-        }
-
-//         -----
-
-//         print("---------")
-//         print("                         CB                DD                DDCB              ED                FD                FDCB")
-//        for code:Int in 0...0xff {
-//            let str = lookup[Int(code)].name.padding(toLength: 18, withPad: " ", startingAt: 0)
-//            let strCB = lookupCB[Int(code)].name.padding(toLength: 18, withPad: " ", startingAt: 0)
-//            let strDD = lookupDD[Int(code)].name.padding(toLength: 18, withPad: " ", startingAt: 0)
-//            let strDDCB = lookupDDCB[Int(code)].name.padding(toLength: 18, withPad: " ", startingAt: 0)
-//            let strED = lookupED[Int(code)].name.padding(toLength: 18, withPad: " ", startingAt: 0)
-//            let strFD = lookupFD[Int(code)].name.padding(toLength: 18, withPad: " ", startingAt: 0)
-//            let strFDCB = lookupFDCB[Int(code)].name.padding(toLength: 18, withPad: " ", startingAt: 0)
-//            print(String(format:"0x%02X",code)," - \(str)\(strCB)\(strDD)\(strDDCB)\(strED)\(strFD)\(strFDCB)")
-//         }
-//         print("---------")
     }
     
     func initParityTable() {
@@ -181,31 +63,31 @@ class z80 {
     }
 
     func decodeCB() {
-        scheduler.append(Fetch(lookupCB))
+        scheduler.append(Fetch(self.ins.lookupCB))
     }
     
     func decodeDD() {
         indexIdx = 1
-        scheduler.append(Fetch(lookupDD))
+        scheduler.append(Fetch(self.ins.lookupDD))
     }
     
     func decodeED() {
-        scheduler.append(Fetch(lookupED))
+        scheduler.append(Fetch(self.ins.lookupED))
     }
     
     func decodeFD() {
         indexIdx = 2
-        scheduler.append(Fetch(lookupFD))
+        scheduler.append(Fetch(self.ins.lookupFD))
     }
     
     func decodeDDCB() {
         regs.R &-= 1
-        scheduler.append(Fetch(lookupDDCB))
+        scheduler.append(Fetch(self.ins.lookupDDCB))
     }
     
     func decodeFDCB() {
         regs.R &-= 1
-        scheduler.append(Fetch(lookupFDCB))
+        scheduler.append(Fetch(self.ins.lookupFDCB))
     }
     
     func RegisterTrap(pc: uint16, trap: @escaping CPUTrap) {
@@ -324,7 +206,7 @@ class z80 {
     func newInstruction() {
         prepareForNewInstruction()
         doTraps()
-        scheduler.append(Fetch(lookup))
+        scheduler.append(Fetch(self.ins.lookup))
     }
     
     func prepareForNewInstruction() {

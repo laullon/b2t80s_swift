@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "208368982A8E597400E47E0B"
-               BuildableName = "b2t80s.app"
-               BlueprintName = "b2t80s"
+               BlueprintIdentifier = "2052B74C2AF63DFD00E67C7B"
+               BuildableName = "z80play.app"
+               BlueprintName = "z80play"
                ReferencedContainer = "container:b2t80s.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -34,31 +34,20 @@
             parallelizable = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "208368A92A8E597600E47E0B"
-               BuildableName = "b2t80sTests.xctest"
-               BlueprintName = "b2t80sTests"
+               BlueprintIdentifier = "2052B75F2AF63DFF00E67C7B"
+               BuildableName = "z80playTests.xctest"
+               BlueprintName = "z80playTests"
                ReferencedContainer = "container:b2t80s.xcodeproj">
             </BuildableReference>
-            <SkippedTests>
-               <Test
-                  Identifier = "b2t80sTests">
-               </Test>
-               <Test
-                  Identifier = "tapTests">
-               </Test>
-               <Test
-                  Identifier = "z80Tests/testZEXDoc()">
-               </Test>
-            </SkippedTests>
          </TestableReference>
          <TestableReference
-            skipped = "YES"
+            skipped = "NO"
             parallelizable = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "208368B32A8E597600E47E0B"
-               BuildableName = "b2t80sUITests.xctest"
-               BlueprintName = "b2t80sUITests"
+               BlueprintIdentifier = "2052B7692AF63DFF00E67C7B"
+               BuildableName = "z80playUITests.xctest"
+               BlueprintName = "z80playUITests"
                ReferencedContainer = "container:b2t80s.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -78,24 +67,16 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "208368982A8E597400E47E0B"
-            BuildableName = "b2t80s.app"
-            BlueprintName = "b2t80s"
+            BlueprintIdentifier = "2052B74C2AF63DFD00E67C7B"
+            BuildableName = "z80play.app"
+            BlueprintName = "z80play"
             ReferencedContainer = "container:b2t80s.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "-tap"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "/Users/glaullon/Downloads/BorderTronCC16K.tap"
+            argument = "pp"
             isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "/Users/glaullon/zxspectrum/pacman-zx/pacman.tap"
-            isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
    </LaunchAction>
@@ -109,9 +90,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "208368982A8E597400E47E0B"
-            BuildableName = "b2t80s.app"
-            BlueprintName = "b2t80s"
+            BlueprintIdentifier = "2052B74C2AF63DFD00E67C7B"
+            BuildableName = "z80play.app"
+            BlueprintName = "z80play"
             ReferencedContainer = "container:b2t80s.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

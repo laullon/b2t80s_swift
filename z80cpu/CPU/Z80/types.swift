@@ -70,3 +70,61 @@ struct opCode {
 }
 
 let bogusOpCode = opCode("bogus", 0, 0, 0, [], {cpu in fatalError()})
+
+public extension UInt16 {
+    init?(asm: String) {
+        let v = asm.uppercased()
+        if v.hasPrefix("0X") {
+            self.init(v.trimmingPrefix("0X"), radix: 16)
+        } else if v.hasPrefix("0B") {
+            self.init(v.trimmingPrefix("0B"), radix: 2)
+        } else {
+            self.init(v)
+        }
+    }
+    
+    func toHex() -> String {
+        return String(format: "0x%04X", self)
+    }
+}
+
+extension UInt8 {
+    init?(asm: String) {
+        let v = asm.uppercased()
+        if v.hasPrefix("0X") {
+            self.init(v.trimmingPrefix("0X"), radix: 16)
+        } else if v.hasPrefix("0B") {
+            self.init(v.trimmingPrefix("0B"), radix: 2)
+        } else {
+            self.init(v)
+        }
+    }
+
+    func toHex() -> String {
+        return String(format: "0x%02X", self)
+    }
+    
+    func toBin() -> String {
+        var str = String(self, radix: 2)
+        str = String(repeating: "0", count: self.leadingZeroBitCount) + str
+        return "0b\(str)"
+    }
+    
+    func toHexShort() -> String {
+        return String(format: "%02X", self)
+    }
+}
+
+extension Collection {
+    func unfoldSubSequences(limitedTo maxLength: Int) -> UnfoldSequence<SubSequence,Index> {
+        sequence(state: startIndex) { start in
+            guard start < self.endIndex else { return nil }
+            let end = self.index(start, offsetBy: maxLength, limitedBy: self.endIndex) ?? self.endIndex
+            defer { start = end }
+            return self[start..<end]
+        }
+    }
+    func subSequences(of n: Int) -> [SubSequence] {
+        .init(unfoldSubSequences(limitedTo: n))
+    }
+}

@@ -65,10 +65,10 @@ final class z80Tests: XCTestCase {
                     }
                 }
                 
-//                print("\n")
-//                print("\n-------------------------")
-//                print("ready to test:", test.name)
-//                print("-------------------------\n")
+                print("\n")
+                print("\n-------------------------")
+                print("ready to test:", test.name)
+                print("-------------------------\n")
 //                print(hex.Dump(bus.mem[0:16]))
 //                print("regs:", test.registers)
 //                print("start test?", test.name, "endpc:",result.endPC)
