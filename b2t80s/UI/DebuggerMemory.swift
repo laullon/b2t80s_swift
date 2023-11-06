@@ -43,8 +43,7 @@ struct DebuggerMemory : View {
         }
         .onChange(of: addr) {
             let comps = addr.split(separator: " ")
-            let nAddr = String(comps[0].trimmingPrefix("0x"))
-            menStart = UInt16(nAddr, radix: 16)!
+            menStart = UInt16(asm: String(comps[0]))!
             reload()
         }
         .onAppear {
