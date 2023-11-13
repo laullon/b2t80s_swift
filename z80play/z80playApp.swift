@@ -11,7 +11,7 @@ import SwiftUI
 struct z80playApp: App {
     var body: some Scene {
         DocumentGroup(newDocument: z80playDocument()) { file in
-            ContentView(document: file.$document, machine: file.document.machine)
+            ContentView(doc: file.$document)
         }
     }
 }

@@ -43,7 +43,7 @@ class Z80Compiler {
         }
     }
     
-    func compile(_ sourceCode: String) -> [Op] {
+    func compile(_ sourceCode: String, menStart: UInt16 = 0) -> [Op] {
         var res: [Op] = []
         
         sourceCode.split(omittingEmptySubsequences: false, whereSeparator: \.isNewline)
@@ -55,20 +55,21 @@ class Z80Compiler {
                 if !line.isEmpty {
                     res.append(compile_line(line))
                 } else {
-                    let op = Op(inst: Label(name: ""))
+                    let op = Op(inst: Void(name: ""))
                     op.valid = true
                     res.append(op)
                 }
             }
         
         var labels: [String: UInt16]=[:]
-        var pc = UInt16(0)
+        var pc = menStart
         res.forEach { op in
             if op.valid {
                 if let l = op.inst as? Label {
                     labels[l.name] = pc
+                    l.addr = pc
                 } else if let org = op.inst as? Org {
-                    pc = org.pc
+                    pc = org.pc + menStart
                 } else {
                     op.pc = pc
                 }

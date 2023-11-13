@@ -26,9 +26,15 @@
 		200B83EC2AF64F9100430EF5 /* opsCodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2005EAC32AC58D1300472B64 /* opsCodes.swift */; };
 		200B83ED2AF64F9100430EF5 /* test.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20C8C3922A92154100188246 /* test.swift */; };
 		200B83EE2AF64F9100430EF5 /* diss.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20A67ADB2A9A079E0012CEAB /* diss.swift */; };
+		20283D772AFA4620005A518D /* DebuggerPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20283D762AFA4620005A518D /* DebuggerPanel.swift */; };
+		20297EE32B024660000C6C9B /* BinCodeViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20297EE22B024660000C6C9B /* BinCodeViewer.swift */; };
 		203510B92AB0A8310069B16D /* sound.swift in Sources */ = {isa = PBXBuildFile; fileRef = 203510B82AB0A8310069B16D /* sound.swift */; };
 		203882972AA9E5C000878CD9 /* formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 203882962AA9E5C000878CD9 /* formatters.swift */; };
 		203FC8CD2AC2BFDD00F7E0A1 /* breakPointsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 203FC8CC2AC2BFDD00F7E0A1 /* breakPointsView.swift */; };
+		20490C402AFE41B00036059F /* Machine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20490C3F2AFE41B00036059F /* Machine.swift */; };
+		20490C412AFE52A10036059F /* 48k.rom in Resources */ = {isa = PBXBuildFile; fileRef = 20A67AE62A9DEA200012CEAB /* 48k.rom */; };
+		20490C452AFEAED10036059F /* 48k.snap in Resources */ = {isa = PBXBuildFile; fileRef = 20490C442AFEAED10036059F /* 48k.snap */; };
+		20490C472AFEB63F0036059F /* Screen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20490C462AFEB63F0036059F /* Screen.swift */; };
 		204AC99A2A9E295C008FF2F8 /* bitmap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 204AC9992A9E295C008FF2F8 /* bitmap.swift */; };
 		2052B7502AF63DFD00E67C7B /* z80playApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2052B74F2AF63DFD00E67C7B /* z80playApp.swift */; };
 		2052B7522AF63DFD00E67C7B /* z80playDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2052B7512AF63DFD00E67C7B /* z80playDocument.swift */; };
@@ -40,6 +46,8 @@
 		2052B7712AF63E0000E67C7B /* z80playUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2052B7702AF63E0000E67C7B /* z80playUITestsLaunchTests.swift */; };
 		2052B77C2AF6454700E67C7B /* Z80Compiler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2052B77B2AF6454700E67C7B /* Z80Compiler.swift */; };
 		2052B77E2AF6459200E67C7B /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2052B77D2AF6459200E67C7B /* Types.swift */; };
+		205C35B12AFBD50D002A2868 /* SpritesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20F6F7682ADDA11900E01F1A /* SpritesView.swift */; };
+		205C35B22AFBD5FD002A2868 /* bitmap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 204AC9992A9E295C008FF2F8 /* bitmap.swift */; };
 		20759FF72AA34CC200E0969D /* cassete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20759FF62AA34CC200E0969D /* cassete.swift */; };
 		20759FF92AA34EE700E0969D /* tap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20759FF82AA34EE700E0969D /* tap.swift */; };
 		208184852AE12D5A008C3D47 /* misc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 208184842AE12D5A008C3D47 /* misc.swift */; };
@@ -61,6 +69,7 @@
 		20A67AE92A9E06AB0012CEAB /* ula.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20A67AE82A9E06AB0012CEAB /* ula.swift */; };
 		20B4118D2AC38B1600645F1C /* misc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20B4118C2AC38B1600645F1C /* misc.swift */; };
 		20B411902AC464DD00645F1C /* DebuggerControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20B4118F2AC464DD00645F1C /* DebuggerControls.swift */; };
+		20B589E52AFE3B4800688859 /* ToolBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20B589E42AFE3B4800688859 /* ToolBar.swift */; };
 		20C4EF352AC5808400776D19 /* AddrSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20C4EF342AC5808400776D19 /* AddrSelector.swift */; };
 		20C5EACD2AA094B90027E715 /* ula_key.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20C5EACC2AA094B90027E715 /* ula_key.swift */; };
 		20C8C3812A8F635800188246 /* z80Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20C8C3802A8F635800188246 /* z80Tests.swift */; };
@@ -124,9 +133,14 @@
 		200B83C82AF64DF600430EF5 /* z80cpu.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = z80cpu.h; sourceTree = "<group>"; };
 		200B83C92AF64DF600430EF5 /* z80cpu.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = z80cpu.docc; sourceTree = "<group>"; };
 		200C3B362A9F72DE00B03EE4 /* tests.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = tests.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		20283D762AFA4620005A518D /* DebuggerPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebuggerPanel.swift; sourceTree = "<group>"; };
+		20297EE22B024660000C6C9B /* BinCodeViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinCodeViewer.swift; sourceTree = "<group>"; };
 		203510B82AB0A8310069B16D /* sound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = sound.swift; sourceTree = "<group>"; };
 		203882962AA9E5C000878CD9 /* formatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = formatters.swift; sourceTree = "<group>"; };
 		203FC8CC2AC2BFDD00F7E0A1 /* breakPointsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = breakPointsView.swift; sourceTree = "<group>"; };
+		20490C3F2AFE41B00036059F /* Machine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Machine.swift; sourceTree = "<group>"; };
+		20490C442AFEAED10036059F /* 48k.snap */ = {isa = PBXFileReference; lastKnownFileType = file; path = 48k.snap; sourceTree = "<group>"; };
+		20490C462AFEB63F0036059F /* Screen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Screen.swift; sourceTree = "<group>"; };
 		204AC9992A9E295C008FF2F8 /* bitmap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = bitmap.swift; sourceTree = "<group>"; };
 		2052B74D2AF63DFD00E67C7B /* z80play.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = z80play.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2052B74F2AF63DFD00E67C7B /* z80playApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = z80playApp.swift; sourceTree = "<group>"; };
@@ -172,6 +186,7 @@
 		20A67AE82A9E06AB0012CEAB /* ula.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ula.swift; sourceTree = "<group>"; };
 		20B4118C2AC38B1600645F1C /* misc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = misc.swift; sourceTree = "<group>"; };
 		20B4118F2AC464DD00645F1C /* DebuggerControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebuggerControls.swift; sourceTree = "<group>"; };
+		20B589E42AFE3B4800688859 /* ToolBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolBar.swift; sourceTree = "<group>"; };
 		20C4EF342AC5808400776D19 /* AddrSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddrSelector.swift; sourceTree = "<group>"; };
 		20C5EACC2AA094B90027E715 /* ula_key.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ula_key.swift; sourceTree = "<group>"; };
 		20C8C3802A8F635800188246 /* z80Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = z80Tests.swift; sourceTree = "<group>"; };
@@ -263,18 +278,28 @@
 			path = UI;
 			sourceTree = "<group>";
 		};
+		20490C432AFEAEBF0036059F /* snaps */ = {
+			isa = PBXGroup;
+			children = (
+				20490C442AFEAED10036059F /* 48k.snap */,
+			);
+			path = snaps;
+			sourceTree = "<group>";
+		};
 		2052B74E2AF63DFD00E67C7B /* z80play */ = {
 			isa = PBXGroup;
 			children = (
-				2052B74F2AF63DFD00E67C7B /* z80playApp.swift */,
-				2052B7512AF63DFD00E67C7B /* z80playDocument.swift */,
-				2052B7532AF63DFD00E67C7B /* ContentView.swift */,
+				20490C432AFEAEBF0036059F /* snaps */,
+				20B589E32AFE3A9E00688859 /* UI */,
 				2052B7552AF63DFF00E67C7B /* Assets.xcassets */,
 				2052B75A2AF63DFF00E67C7B /* Info.plist */,
-				2052B75B2AF63DFF00E67C7B /* z80play.entitlements */,
 				2052B7572AF63DFF00E67C7B /* Preview Content */,
-				2052B77B2AF6454700E67C7B /* Z80Compiler.swift */,
 				2052B77D2AF6459200E67C7B /* Types.swift */,
+				2052B77B2AF6454700E67C7B /* Z80Compiler.swift */,
+				2052B75B2AF63DFF00E67C7B /* z80play.entitlements */,
+				2052B74F2AF63DFD00E67C7B /* z80playApp.swift */,
+				2052B7512AF63DFD00E67C7B /* z80playDocument.swift */,
+				20490C3F2AFE41B00036059F /* Machine.swift */,
 			);
 			path = z80play;
 			sourceTree = "<group>";
@@ -307,16 +332,16 @@
 		208368902A8E597400E47E0B = {
 			isa = PBXGroup;
 			children = (
+				2052B74E2AF63DFD00E67C7B /* z80play */,
 				2083689B2A8E597400E47E0B /* b2t80s */,
 				208368AD2A8E597600E47E0B /* b2t80sTests */,
 				208368B72A8E597600E47E0B /* b2t80sUITests */,
-				2052B74E2AF63DFD00E67C7B /* z80play */,
-				2052B7632AF63DFF00E67C7B /* z80playTests */,
-				2052B76D2AF63E0000E67C7B /* z80playUITests */,
-				200B83C72AF64DF600430EF5 /* z80cpu */,
+				200B83B72AF64ABD00430EF5 /* Frameworks */,
 				2083689A2A8E597400E47E0B /* Products */,
 				200C3B362A9F72DE00B03EE4 /* tests.playground */,
-				200B83B72AF64ABD00430EF5 /* Frameworks */,
+				200B83C72AF64DF600430EF5 /* z80cpu */,
+				2052B7632AF63DFF00E67C7B /* z80playTests */,
+				2052B76D2AF63E0000E67C7B /* z80playUITests */,
 			);
 			sourceTree = "<group>";
 		};
@@ -440,6 +465,18 @@
 				203510B82AB0A8310069B16D /* sound.swift */,
 			);
 			path = zxspectrum;
+			sourceTree = "<group>";
+		};
+		20B589E32AFE3A9E00688859 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				2052B7532AF63DFD00E67C7B /* ContentView.swift */,
+				20283D762AFA4620005A518D /* DebuggerPanel.swift */,
+				20B589E42AFE3B4800688859 /* ToolBar.swift */,
+				20490C462AFEB63F0036059F /* Screen.swift */,
+				20297EE22B024660000C6C9B /* BinCodeViewer.swift */,
+			);
+			path = UI;
 			sourceTree = "<group>";
 		};
 		20C8C37E2A8F630900188246 /* CPU */ = {
@@ -635,8 +672,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				20490C412AFE52A10036059F /* 48k.rom in Resources */,
 				2052B7592AF63DFF00E67C7B /* Preview Assets.xcassets in Resources */,
 				2052B7562AF63DFF00E67C7B /* Assets.xcassets in Resources */,
+				20490C452AFEAED10036059F /* 48k.snap in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -689,13 +728,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				205C35B22AFBD5FD002A2868 /* bitmap.swift in Sources */,
 				200B83EE2AF64F9100430EF5 /* diss.swift in Sources */,
 				2052B7502AF63DFD00E67C7B /* z80playApp.swift in Sources */,
+				20490C402AFE41B00036059F /* Machine.swift in Sources */,
+				20297EE32B024660000C6C9B /* BinCodeViewer.swift in Sources */,
 				200B83EC2AF64F9100430EF5 /* opsCodes.swift in Sources */,
 				20D5DEE22AF9376E0048DB83 /* DebuggerRegisters.swift in Sources */,
 				2052B77C2AF6454700E67C7B /* Z80Compiler.swift in Sources */,
 				200B83ED2AF64F9100430EF5 /* test.swift in Sources */,
 				200B83EA2AF64F9100430EF5 /* z80.swift in Sources */,
+				20490C472AFEB63F0036059F /* Screen.swift in Sources */,
 				200B83E92AF64F9100430EF5 /* registers.swift in Sources */,
 				200B83E72AF64F9100430EF5 /* scheduler.swift in Sources */,
 				200B83EB2AF64F9100430EF5 /* ops.swift in Sources */,
@@ -703,7 +746,10 @@
 				200B83E82AF64F9100430EF5 /* types.swift in Sources */,
 				200B83E62AF64F9100430EF5 /* bus.swift in Sources */,
 				20D5DEDD2AF9095F0048DB83 /* DebuggerMemory.swift in Sources */,
+				205C35B12AFBD50D002A2868 /* SpritesView.swift in Sources */,
 				2052B7522AF63DFD00E67C7B /* z80playDocument.swift in Sources */,
+				20283D772AFA4620005A518D /* DebuggerPanel.swift in Sources */,
+				20B589E52AFE3B4800688859 /* ToolBar.swift in Sources */,
 				2052B77E2AF6459200E67C7B /* Types.swift in Sources */,
 				2052B7542AF63DFD00E67C7B /* ContentView.swift in Sources */,
 			);
@@ -825,6 +871,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = z80play/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -857,6 +904,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = z80play/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1093,6 +1141,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = b2t80s/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1126,6 +1175,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = b2t80s/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

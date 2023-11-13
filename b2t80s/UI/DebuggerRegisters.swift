@@ -11,82 +11,88 @@ struct DebuggerRegisters: View {
     @ObservedObject var debugData: RegistersData
     
     var body: some View {
-        Grid(alignment: .leading) {
-            GridRow {
-                Text("A:")
-                    .lineLimit(1)
-                    .fixedSize()
-                Text(debugData.reg8[0])
-                    .lineLimit(1)
-                    .fixedSize()
-                Text("F:")
-                    .lineLimit(1)
-                    .fixedSize()
-                Text(debugData.reg8[1])
-                    .lineLimit(1)
-                    .fixedSize()
-                FDetail(debugData: debugData).gridCellColumns(2)
-                Text("SP: \(debugData.reg16[0])")
-                    .lineLimit(1)
-                    .fixedSize()
+        HStack(alignment: .top) {
+            Grid(alignment: .leading) {
+                GridRow {
+                    RegView(label: "A:", value: debugData.reg8[0])
+                    RegView(label: "F:", value: debugData.reg8[1])
+                }
+                GridRow {
+                    RegView(label: "B:", value: debugData.reg8[2])
+                    RegView(label: "C:", value: debugData.reg8[3])
+                }
+                GridRow {
+                    RegView(label: "D:", value: debugData.reg8[4])
+                    RegView(label: "E:", value: debugData.reg8[5])
+                }
+                GridRow {
+                    RegView(label: "H:", value: debugData.reg8[6])
+                    RegView(label: "L:", value: debugData.reg8[7])
+                }
+                GridRow {
+                    RegView(label: "IXL:", value: debugData.reg8[8])
+                    RegView(label: "IXH:", value: debugData.reg8[9])
+                }
+                GridRow {
+                    RegView(label: "IYH:", value: debugData.reg8[10])
+                    RegView(label: "IYL:", value: debugData.reg8[11])
+                }
+                GridRow {
+                    Divider().gridCellColumns(4).gridCellUnsizedAxes(.horizontal)
+                }
+                GridRow {
+                    HStack{
+                        Text("Flags:")
+                        FDetail(debugData: debugData)
+                    }.gridCellColumns(4)
+                }
             }
-            GridRow {
-                Text("B:")
-                Text(debugData.reg8[2])
-                Text("C:")
-                Text(debugData.reg8[3])
-                Text("BC:")
-                Text(debugData.reg16[1])
-                    .lineLimit(1)
-                    .fixedSize()
-                Text("----------")
+            VStack {
+                RegView(label: "AF:", value: debugData.reg16[0])
+                RegView(label: "BC:", value: debugData.reg16[1])
+                RegView(label: "DE:", value: debugData.reg16[2])
+                RegView(label: "HL:", value: debugData.reg16[3])
+                RegView(label: "IX:", value: debugData.reg16[4])
+                RegView(label: "IY:", value: debugData.reg16[5])
+                RegView(label: "SP:", value: debugData.reg16[6])
+                RegView(label: "PC:", value: debugData.reg16[7])
             }
-            GridRow {
-                Text("D:")
-                Text(debugData.reg8[4])
-                Text("E:")
-                Text(debugData.reg8[5])
-                Text("DE:")
-                Text(debugData.reg16[2])
-                Text(debugData.spStack[0])
-            }
-            GridRow {
-                Text("H:")
-                Text(debugData.reg8[6])
-                Text("L:")
-                Text(debugData.reg8[7])
-                Text("HL:")
-                Text(debugData.reg16[3])
-                Text(debugData.spStack[1])
-            }
-            GridRow {
-                Text("").gridCellColumns(4)
-                Text("IX:")
-                Text(debugData.reg16[4])
-                Text(debugData.spStack[2])
-            }
-            GridRow {
-                Text("").gridCellColumns(4)
-                Text("IY:")
-                Text(debugData.reg16[5])
-                Text(debugData.spStack[3])
-            }
-        }        
+            Divider()
+            Text("Stack")
+        }
         .font(Font.system(size: 14,design: .monospaced))
     }
 }
 
 #Preview {
-    DebuggerRegisters(debugData: RegistersData())
+    DebuggerRegisters(debugData: RegistersData()).frame(width: 400).padding(50)
+}
+
+struct RegView: View {
+    var label: String
+    var value: String
+    
+    var body: some View {
+        HStack{
+            Text(label)
+                .lineLimit(1)
+                .fixedSize()
+                .frame(maxWidth: 40, alignment: .trailing)
+            Text(value)
+                .lineLimit(1)
+                .fixedSize()
+        }
+    }
 }
 
 class RegistersData: ObservableObject{
-    @Published var reg8: [String] = Array(repeating: "0x00", count: 8)
-    @Published var reg16: [String] = Array(repeating: "0x00", count: 6)
-    @Published var spStack: [String] = Array(repeating: "0x00", count: 4)
+    @Published var reg8: [String] = Array(repeating: "0x00", count: 12)
+    @Published var reg16: [String] = Array(repeating: "0x0000", count: 8)
+    @Published var spStack: [String] = Array(repeating: "0x0000", count: 4)
     @Published var flgs = flags()
     
     func update(regs: Registers) {
+        flgs = regs.F
         reg8 = [
             regs.A.toHex(),
             regs.F.GetByte().toHex(),
@@ -96,22 +102,28 @@ class RegistersData: ObservableObject{
             regs.E.toHex(),
             regs.H.toHex(),
             regs.L.toHex(),
+            regs.IXH.toHex(),
+            regs.IXL.toHex(),
+            regs.IYH.toHex(),
+            regs.IYL.toHex(),
         ]
         reg16 = [
-            regs.SP.toHex(),
+            ((UInt16(regs.A)<<8)|UInt16(regs.F.GetByte())).toHex(),
             regs.BC.toHex(),
             regs.DE.toHex(),
             regs.HL.toHex(),
             regs.IX.toHex(),
             regs.IY.toHex(),
+            regs.SP.toHex(),
+            regs.PC.toHex(),
         ]
-
+        
     }
 }
 
 struct FDetail : View {
     @ObservedObject var debugData: RegistersData
-
+    
     var body: some View {
         Group{
             Text("S").foregroundColor(debugData.flgs.S ? Color.blue : Color.gray) +

@@ -78,6 +78,8 @@ public extension UInt16 {
             self.init(v.trimmingPrefix("0X"), radix: 16)
         } else if v.hasPrefix("0B") {
             self.init(v.trimmingPrefix("0B"), radix: 2)
+        } else if v.hasPrefix("%") {
+            self.init(v.trimmingPrefix("%"), radix: 2)
         } else {
             self.init(v)
         }
@@ -95,6 +97,8 @@ extension UInt8 {
             self.init(v.trimmingPrefix("0X"), radix: 16)
         } else if v.hasPrefix("0B") {
             self.init(v.trimmingPrefix("0B"), radix: 2)
+        } else if v.hasPrefix("%") {
+            self.init(v.trimmingPrefix("%"), radix: 2)
         } else {
             self.init(v)
         }

@@ -143,7 +143,7 @@ class z80InstructionSet {
         opCode("RET cc[y]", 0b11000111, 0b11000000, 1, [Exec(l: 1, f: retCC)], {cpu in ()}),
         opCode("JP cc[y], nn", 0b11000111, 0b11000010, 3, [mrNNpc(f: jpCC)], {cpu in ()}),
         opCode("CALL cc[y], nn", 0b11000111, 0b11000100, 3, [mrNNpc(f: callCC)], {cpu in ()}),
-        opCode("RST y*8", 0b11000111, 0b11000111, 1, [Exec(l: 1, f: rstP)], {cpu in ()}),
+        opCode("RST_y*8", 0b11000111, 0b11000111, 1, [Exec(l: 1, f: rstP)], {cpu in ()}),
         opCode("CALL nn", 0xFF, 0xCD, 3, [mrNNpc(f: {cpu in ()}), Exec(l: 1, f: call)], {cpu in ()}),
         
         opCode("NOP", 0xFF, 0x00, 1, [], {cpu in ()}),

@@ -44,8 +44,7 @@ struct Symbol: Comparable, Hashable {
 }
 
 struct AddrSelector: View {
-    let symbols: [Symbol]
-    @Binding var selection: String
+    @ObservedObject var model: DebuggerMemoryModel
     
     @State private var pop = false
     @State private var listSelection: String = ""
@@ -61,7 +60,7 @@ struct AddrSelector: View {
             }
             .popover(isPresented: $pop) {
                 List(selection: $listSelection) {
-                    ForEach(Array(symbols.sorted(by: <)), id: \.self) { symbol in
+                    ForEach(Array(model.symbols.sorted(by: <)), id: \.self) { symbol in
                         Text("\(symbol.addr.toHex()) \(symbol.name)")
                             .tag("\(symbol.addr.toHex()) \(symbol.name)")
                     }
@@ -69,19 +68,31 @@ struct AddrSelector: View {
                 .onChange(of: listSelection) {
                     pop.toggle()
                     text = listSelection
-                    selection = text
+                    let comps = text.split(separator: " ")
+                    model.start.addr = UInt16(asm: String(comps[0])) ?? 0
+                    if comps.count == 2 {
+                        model.start.name = String(comps[1])
+                    }
                 }
             }
+        }.onChange(of: model.start.addr) { oldValue, newValue in
+            text = model.start.addr.toHex()
         }.onSubmit {
-            selection = text
+            let comps = text.split(separator: " ")
+            model.start.addr = UInt16(asm: String(comps[0])) ?? 0
+            if comps.count == 2 {
+                model.start.name = String(comps[1])
+            }
         }
     }
 }
 
 #Preview {
-    let symbs = [Symbol(addr: 0x1234, name: "aaa")]
-    @State var newAddr: String = ""
+    let model = DebuggerMemoryModel()
+    model.symbols = [Symbol(addr: 0x1234, name: "aaa")]
+    model.start = Symbol(addr: 0, name: "")
     
-    return AddrSelector(symbols: symbs, selection: $newAddr).padding(10)
+    return AddrSelector(model: model)
+        .padding(10)
 }
 

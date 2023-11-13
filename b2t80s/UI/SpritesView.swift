@@ -7,36 +7,57 @@
 
 import SwiftUI
 
-struct SpritesView: View {
-    @State var addr: String = ""
-    @Binding var symbols: [Symbol]
-    @State var newSymbol = Symbol(addr: 0, name: "")
-    
-    @State private var rows = 8
-    @State private var cols = 1
-    @State private var sprites = 1
-    @State private var data : [Sprite] = []
-                           
-    var getData : (_ bytes: Int) -> [UInt8]
+enum Flow: String, CaseIterable, Identifiable {
+    case down
+    case right
+    var id: String { rawValue }
+}
 
+struct SpritesView: View {
+    @ObservedObject var model: DebuggerMemoryModel
+
+    @State private var newSymbol = Symbol(addr: 0, name: "")
+    @State private var menStart: UInt16 =  0
+    
+    @AppStorage("SPView.rows") private var rows = 8
+    @AppStorage("SPView.cols") private var cols = 1
+    @AppStorage("SPView.sprites") private var sprites = 1
+    @AppStorage("SPView.flow") private var flow = Flow.down
+    @State private var spritesList : [Sprite] = []
+    
     var body: some View {
         VStack {
+            AddrSelector(model: model)
             HStack {
-                TextField("0x0000 - label", text: $addr)
-            }
-            HStack {
-                Text("rows:")
+                Text("Cols:")
+                    .fixedSize()
+                TextField("", value: $cols, formatter: NumberFormatter())
+                    .frame(width: 60)
+                
+                Text("Rows:")
+                    .fixedSize()
+                
                 TextField("", value: $rows, formatter: NumberFormatter())
                     .frame(width: 60)
+                
+                Picker("Flow:", selection: $flow) {
+                    Image(systemName: "arrow.down").tag(Flow.down)
+                    Image(systemName: "arrow.right").tag(Flow.right)
+                }
+                .pickerStyle(.segmented)
+                .fixedSize()
+                
                 Text("sprites:")
+                    .fixedSize()
+                
                 TextField("", value: $sprites, formatter: NumberFormatter())
             }
-            Table(data) {
+            Table(spritesList) {
                 TableColumn("") { sprite in
                     Image(sprite.bitmap.cgImage(), scale:0.1, label: Text(verbatim: ""))
                         .interpolation(.none)
                         .aspectRatio(contentMode: .fit)
-                        .padding(2)
+                        .padding(10)
                         .border(Color.black, width: /*@START_MENU_TOKEN@*/1/*@END_MENU_TOKEN@*/)
                 }
                 .alignment(.center)
@@ -51,6 +72,18 @@ struct SpritesView: View {
             }
         }
         .font(Font.system(.body, design: .monospaced))
+        .onAppear(perform: {
+            reload()
+        })
+        .onChange(of: model.start.addr) { oldValue, newValue in
+            reload()
+        }
+        .onChange(of: model.data) { oldValue, newValue in
+            reload()
+        }
+        .onChange(of: flow) {
+            reload()
+        }
         .onSubmit {
             reload()
         }
@@ -60,70 +93,14 @@ struct SpritesView: View {
     }
     
     func reload() {
-        let newData = getData(rows*sprites)
-        data = []
-        for s in 0..<sprites {
-            var d : [UInt8] = []
-            for i in 0..<rows {
-                d.append(newData[(s*rows)+i])
-            }
-            data.append(Sprite(rows: rows, data: d))
+        model.count = UInt16(cols*rows*sprites)
+        spritesList = []
+        model.update()
+        let data = model.data.unfoldSubSequences(limitedTo: cols*rows)
+        data.forEach { data in
+            spritesList.append(Sprite(rows: rows, cols: cols, data: Array(data), flow: flow))
         }
-
     }
-}
-
-#Preview {
-    print("lll")
-    let symbs = [Symbol(addr: 0x1234, name: "aaa")]
-
-    let s = Binding<[Symbol]>(
-        get: {
-            return symbs
-        }, set: { val in
-            print(val)
-        }
-    )
-
-    return SpritesView(symbols: s, getData: {bytes in 
-        let data : [UInt8] = [0b00111100,
-                0b01111110,
-                0b11011011,
-                0b11111111,
-                0b11011011,
-                0b11100111,
-                0b11111111,
-                0b10101010,
-                
-                0b00000000,
-                0b00000000,
-                0b00000000,
-                0b00000000,
-                0b00000000,
-                0b00000000,
-                0b00000000,
-                0b00000000,
-
-                0b11000000,
-                0b11100000,
-                0b10110000,
-                0b11110000,
-                0b10110000,
-                0b01110000,
-                0b11110000,
-                0b10100000,
-
-                0b00000011,
-                0b00000111,
-                0b00001101,
-                0b00001111,
-                0b00001101,
-                0b00001110,
-                0b00001111,
-                0b00001010,
-        ]
-        return Array(data[0..<bytes])
-    })
 }
 
 struct Sprite :Identifiable {
@@ -131,20 +108,74 @@ struct Sprite :Identifiable {
     var data: [UInt8]
     var bitmap: Bitmap
     
-    init(id: UUID = UUID(), rows: Int, data: [UInt8]) {
-        self.id = id
+    init(rows: Int, cols: Int, data: [UInt8], flow: Flow) {
         self.data = data
-        self.bitmap = Bitmap(width: 8, height: rows, color: BitmapColor(r: 0xff, g: 0, b: 0, a: 0xff))
-        for y in 0..<rows {
-            var row = data[y]
-            for x in 0..<8 {
-                if (row&0x80) != 0 {
-                    bitmap[x,y] = BitmapColor(r: 0, g: 0, b: 0, a: 0xff)
-                } else {
-                    bitmap[x,y] = BitmapColor(r: 0xff, g: 0xff, b: 0xff, a: 0xff)
+        self.bitmap = Bitmap(width: 8*cols, height: rows, color: BitmapColor(r: 0xff, g: 0, b: 0, a: 0xff))
+        if flow == .right {
+            for y in 0..<rows {
+                for col in 0..<cols{
+                    var row = data[y*cols+col]
+                    for x in 0..<8 {
+                        if (row&0x80) != 0 {
+                            bitmap[x+(8*col),y] = BitmapColor(r: 0, g: 0, b: 0, a: 0xff)
+                        } else {
+                            bitmap[x+(8*col),y] = BitmapColor(r: 0xff, g: 0xff, b: 0xff, a: 0xff)
+                        }
+                        row = row<<1
+                    }
                 }
-                row = row<<1
+            }
+        } else {
+            for y in 0..<rows {
+                for col in 0..<cols{
+                    var row = data[(rows*col)+y]
+                    for x in 0..<8 {
+                        if (row&0x80) != 0 {
+                            bitmap[x+(8*col),y] = BitmapColor(r: 0, g: 0, b: 0, a: 0xff)
+                        } else {
+                            bitmap[x+(8*col),y] = BitmapColor(r: 0xff, g: 0xff, b: 0xff, a: 0xff)
+                        }
+                        row = row<<1
+                    }
+                }
             }
         }
     }
+}
+
+#Preview {
+    let symbs = [Symbol(addr: 0x1234, name: "aaa")]
+    let data : [UInt8] = [0b00111100,
+                          0b01111110,
+                          0b11011011,
+                          0b11111111,
+                          0b11011011,
+                          0b11100111,
+                          0b11111111,
+                          0b10101010,
+                          
+                          0b00000000,
+                          0b00000000,
+                          0b00000000,
+                          0b00000000,
+                          0b00000000,
+                          0b00000000,
+                          0b00000000,
+                          0b00000000,
+                          
+                          0b00000011,0b11000000,
+                          0b00000111,0b11100000,
+                          0b00001101,0b10110000,
+                          0b00001111,0b11110000,
+                          0b00001101,0b10110000,
+                          0b00001110,0b01110000,
+                          0b00001111,0b11110000,
+                          0b00001010,0b10100000,
+    ]
+
+    let model = DebuggerMemoryModel()
+    model.symbols = symbs
+    model.data = data
+
+    return SpritesView(model: model).padding(10).frame(height: 400)
 }

@@ -37,7 +37,11 @@ class DB: Token {
     }
 }
 
-class Label: Token {}
+class Void: Token {}
+
+class Label: Token {
+    var addr: UInt16?
+}
 
 class Number: Token {
     var addr: UInt16?

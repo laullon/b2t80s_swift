@@ -7,72 +7,75 @@
 
 import SwiftUI
 
+class DebuggerMemoryModel:ObservableObject {
+    @Published var symbols: [Symbol] = []
+    @Published var data: [UInt8] = []
+    @Published var start: Symbol = Symbol(addr: 0, name: "")
+    var count: UInt16 = 0
+    var updater: ((_ start: UInt16, _ count:UInt16)->[UInt8])?
+    
+    func update() {
+        data = (updater ?? empty)(start.addr, 0x100)
+    }
+    
+    private func empty(_ start: UInt16, _ count:UInt16) -> [UInt8] {
+        return Array(repeating: 0, count: Int(count))
+    }
+}
+
+private extension Array where Element == UInt8 {
+    func dump(addr: UInt16) -> String {
+        var res = ""
+        self.unfoldSubSequences(limitedTo: 16).enumerated().forEach( {(idx,data) in
+            res += "\n\((addr &+ UInt16(idx*0x10)).toHex())"
+            res = data.reduce(res) { "\($0) \($1.toHexShort())" }
+        })
+        return res
+    }
+}
+
 struct DebuggerMemory : View {
-    var symbols: [Symbol]
-    var getData : (_ start: UInt16,_ bytes: UInt16) -> [UInt8]
-    
-    @State private var menStart: UInt16 =  0
-    @State private var mem = ""
-    @State private var addr = ""
-    
+    @ObservedObject var model: DebuggerMemoryModel
+
     var body: some View {
         VStack(alignment: .leading) {
             HStack{
                 Button("<<") {
-                    menStart &-= 16 * 16
+                    model.start.addr &-= 16 * 16
                 }
                 Button("<") {
-                    menStart &-= 16
+                    model.start.addr &-= 16
                 }
-                AddrSelector(symbols: symbols, selection: $addr)
+                AddrSelector(model: model)
                 Button(">") {
-                    menStart &+= 16
+                    model.start.addr &+= 16
                 }
                 Button(">>") {
-                    menStart &+= 16 * 16
+                    model.start.addr &+= 16 * 16
                 }
             }
-            Text(mem)
+            Text(model.data.dump(addr: model.start.addr))
                 .lineLimit(16)
                 .fixedSize()
         }
         .fixedSize()
         .frame(maxWidth: .infinity, alignment:.leading)
-        .onChange(of: menStart) { oldValue, newValue in
-            reload()
-        }
-        .onChange(of: addr) {
-            let comps = addr.split(separator: " ")
-            menStart = UInt16(asm: String(comps[0]))!
-            reload()
-        }
-        .onAppear {
-            Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [self] timer in
-                reload()
-            }
-        }
         .font(Font.system(.body, design: .monospaced))
-    }
-    
-    func reload() {
-        let data = getData(menStart, 0x100)
-        var addr = menStart
-        var str = ""
-        for r in 0..<16 {
-            str = "\(str)\(addr.toHex())"
-            for c in 0..<16 {
-                str = "\(str) \(data[(r*16)+c].toHexShort())"
-                addr &+= 1
-            }
-            str = "\(str)\n"
+        .onAppear(perform: {
+            model.update()
+        })
+        .onChange(of: model.start.addr) { oldValue, newValue in
+            model.update()
         }
-        mem = str.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }
 
 #Preview {
     let symbs = [Symbol(addr: 0x1234, name: "aaa")]
-    return DebuggerMemory(symbols: symbs, getData: { start, count in
-        return Array(repeating: UInt8(start&0xff), count: 0x100)
-    }).padding(10).frame(height: 400)
+
+    let model = DebuggerMemoryModel()
+    model.symbols = symbs
+    model.data = Array(repeating: 0, count: Int(0x100))
+    
+    return DebuggerMemory(model: model).padding(10).frame(height: 400)
 }
