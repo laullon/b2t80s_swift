@@ -185,14 +185,7 @@ class Z80Compiler {
             arg.split(separator: "+").map { String($0).trimmingCharacters(in: .whitespaces) }.forEach { arg in
                 parseArg(arg, op: op)
             }
-        } else if arg.hasPrefix("0X") {
-            let n = arg.trimmingPrefix("0X")
-            if n.count>0 {
-                if let v = UInt16(n, radix: 16){
-                    op.args.append(Number(addr: v))
-                }
-            }
-        } else if let v = UInt16(arg, radix: 10){
+        } else if let v = UInt16(asm: arg){
             op.args.append(Number(addr: v))
         } else {
             op.args.append(Number(label: arg))
