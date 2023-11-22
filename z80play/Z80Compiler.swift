@@ -43,8 +43,8 @@ class Z80Compiler {
         }
     }
     
-    func compile(_ sourceCode: String, menStart: UInt16 = 0) -> [Op] {
-        var res: [Op] = []
+    func compile(_ sourceCode: String, menStart: UInt16 = 0) -> ([Op],[Symbol]) {
+        var ops: [Op] = []
         
         sourceCode.split(omittingEmptySubsequences: false, whereSeparator: \.isNewline)
             .forEach { range in
@@ -53,17 +53,17 @@ class Z80Compiler {
                     line = String(line.prefix(upTo: idx))
                 }
                 if !line.isEmpty {
-                    res.append(compile_line(line))
+                    ops.append(compile_line(line))
                 } else {
                     let op = Op(inst: Void(name: ""))
                     op.valid = true
-                    res.append(op)
+                    ops.append(op)
                 }
             }
         
         var labels: [String: UInt16]=[:]
         var pc = menStart
-        res.forEach { op in
+        ops.forEach { op in
             if op.valid {
                 if let l = op.inst as? Label {
                     labels[l.name] = pc
@@ -77,7 +77,7 @@ class Z80Compiler {
             }
         }
         
-        res.forEach { op in
+        ops.forEach { op in
             op.args.forEach { arg in
                 if let num = arg as? Number {
                     if let val = num.addr {
@@ -109,7 +109,17 @@ class Z80Compiler {
                 }
             }
         }
-        return res
+        
+        var symbols = [Symbol]()
+        ops.forEach { op in
+            if op.valid {
+                if let l = op.inst as? Label {
+                    symbols.append(Symbol(addr: l.addr!, name: l.name))
+                }
+            }
+        }
+
+        return (ops,symbols)
     }
     
     private func compile_line(_ line: String) -> Op {

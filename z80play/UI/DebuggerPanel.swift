@@ -19,8 +19,7 @@ struct DebuggerPanel: View {
             DebuggerRegisters(debugData: machine.registersData)
                 .fixedSize()
             Spacer()
-            Divider()
-            TabView{
+            TabView {
                 DebuggerMemory(model: machine.memDebugger)
                     .tabItem {
                         Text("Memory")

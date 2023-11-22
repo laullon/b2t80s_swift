@@ -11,13 +11,12 @@ struct ContentView: View {
     @Binding var doc: z80playDocument
     
     var body: some View {
-        HStack(alignment: .top) {
-            BinCodeViewer(status: doc.machine.status)
-            Divider()
-            TextEditor(text: $doc.text)
-                .lineSpacing(0)
-            Divider()
-            DebuggerPanel(machine: doc.machine)
+        HStack {
+            Editor(text: $doc.text, machine: doc.machine.status)
+                .inspector(isPresented: .constant(true), content: {
+                    DebuggerPanel(machine: doc.machine)
+                        .inspectorColumnWidth(455)
+                })
         }
         .toolbar {
             ToolBar(machine: doc.machine)
@@ -32,6 +31,32 @@ struct ContentView: View {
         })
         .background(.white)
     }
+}
+
+struct myLayout: Layout {
+    struct Cache {
+        var sizes: [CGSize] = []
+    }
+    
+    func makeCache(subviews: Subviews) -> Cache {
+        let sizes = subviews.map { $0.sizeThatFits(.unspecified) }
+        return Cache(sizes: sizes)
+    }
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout Cache) -> CGSize {
+        return proposal.replacingUnspecifiedDimensions()
+    }
+    
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout Cache) {
+        let rigth_size = CGSize(width: cache.sizes.last!.width, height: bounds.height)
+        let rigth = CGPoint(x: bounds.width - cache.sizes.last!.width, y: 0)
+        subviews.last?.place(at: rigth, proposal: ProposedViewSize(width: rigth_size.width, height: .infinity))
+        
+        let left_size = CGSize(width: cache.sizes.last!.width, height: bounds.height)
+        let left = CGPointZero
+        subviews.first?.place(at: left, proposal: ProposedViewSize(left_size))
+    }
+    
 }
 
 #Preview {

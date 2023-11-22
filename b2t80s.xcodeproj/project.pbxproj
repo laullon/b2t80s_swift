@@ -28,6 +28,7 @@
 		200B83EE2AF64F9100430EF5 /* diss.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20A67ADB2A9A079E0012CEAB /* diss.swift */; };
 		20283D772AFA4620005A518D /* DebuggerPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20283D762AFA4620005A518D /* DebuggerPanel.swift */; };
 		20297EE32B024660000C6C9B /* BinCodeViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20297EE22B024660000C6C9B /* BinCodeViewer.swift */; };
+		20297EE52B037CCF000C6C9B /* Editor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20297EE42B037CCF000C6C9B /* Editor.swift */; };
 		203510B92AB0A8310069B16D /* sound.swift in Sources */ = {isa = PBXBuildFile; fileRef = 203510B82AB0A8310069B16D /* sound.swift */; };
 		203882972AA9E5C000878CD9 /* formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 203882962AA9E5C000878CD9 /* formatters.swift */; };
 		203FC8CD2AC2BFDD00F7E0A1 /* breakPointsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 203FC8CC2AC2BFDD00F7E0A1 /* breakPointsView.swift */; };
@@ -135,6 +136,7 @@
 		200C3B362A9F72DE00B03EE4 /* tests.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = tests.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		20283D762AFA4620005A518D /* DebuggerPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebuggerPanel.swift; sourceTree = "<group>"; };
 		20297EE22B024660000C6C9B /* BinCodeViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinCodeViewer.swift; sourceTree = "<group>"; };
+		20297EE42B037CCF000C6C9B /* Editor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Editor.swift; sourceTree = "<group>"; };
 		203510B82AB0A8310069B16D /* sound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = sound.swift; sourceTree = "<group>"; };
 		203882962AA9E5C000878CD9 /* formatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = formatters.swift; sourceTree = "<group>"; };
 		203FC8CC2AC2BFDD00F7E0A1 /* breakPointsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = breakPointsView.swift; sourceTree = "<group>"; };
@@ -475,6 +477,7 @@
 				20B589E42AFE3B4800688859 /* ToolBar.swift */,
 				20490C462AFEB63F0036059F /* Screen.swift */,
 				20297EE22B024660000C6C9B /* BinCodeViewer.swift */,
+				20297EE42B037CCF000C6C9B /* Editor.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -732,6 +735,7 @@
 				200B83EE2AF64F9100430EF5 /* diss.swift in Sources */,
 				2052B7502AF63DFD00E67C7B /* z80playApp.swift in Sources */,
 				20490C402AFE41B00036059F /* Machine.swift in Sources */,
+				20297EE52B037CCF000C6C9B /* Editor.swift in Sources */,
 				20297EE32B024660000C6C9B /* BinCodeViewer.swift in Sources */,
 				200B83EC2AF64F9100430EF5 /* opsCodes.swift in Sources */,
 				20D5DEE22AF9376E0048DB83 /* DebuggerRegisters.swift in Sources */,

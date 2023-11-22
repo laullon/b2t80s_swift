@@ -27,9 +27,9 @@ struct LogEntry: Identifiable {
     }
     
     override func update() {
-//        Task {
-//            data = bus.getBlock(addr: start.addr, length: count)
-//        }
+        //        Task {
+        //            data = bus.getBlock(addr: start.addr, length: count)
+        //        }
     }
 }
 
@@ -43,7 +43,7 @@ class MachineStatus: ObservableObject{
     @MainActor @Published var bitmap: Bitmap?
     var memDebugger = DebuggerMemoryModel()
     var spriteDebugger = DebuggerMemoryModel()
-
+    
     @MainActor func setStatus(_ status: Status) {
         self.status = status
     }
@@ -84,12 +84,13 @@ class Machine {
     private var frame = UInt8(0)
     
     private var cpu: z80
-    private var bus = SimpleBus(men: Array(repeating: UInt8(0), count: Int(0x10000)))
+    private var bus = SimpleBus()
     
     private var compiler = Z80Compiler()
     
     private var done = false
-    
+    let compilerQueue = DispatchQueue(label: "compilerQueue")
+
     init() {
         self.cpu = z80(bus)
         
@@ -98,6 +99,7 @@ class Machine {
         self.status.spriteDebugger.updater = dumpMemory(_:count:)
     }
     
+
     private func dumpMemory(_ start: UInt16, count: UInt16) -> [UInt8] {
         return Array(bus.men[(Int(start))..<(Int(start+count))])
     }
@@ -107,16 +109,13 @@ class Machine {
         
         stop()
         await reset()
-        await resetMemory()
+        resetMemory()
         
-        let ops = compiler.compile(code)
-        var symbols = [Symbol]()
+        let (ops,symbols) = compiler.compile(code)
         
         ops.forEach { op in
             if op.valid {
-                if let l = op.inst as? Label {
-                    symbols.append(Symbol(addr: l.addr!, name: l.name))
-                } else {
+                if op.inst is Inst {
                     op.bytes.enumerated().forEach { byte in
                         bus.men[Int(op.pc)+byte.offset] = byte.element
                     }
@@ -141,11 +140,11 @@ class Machine {
         repeat {
             await self.doStep()
             if !fast {
-            do {
-                try await Task.sleep(for: .seconds(1))
-            } catch {
-                
-            }}
+                do {
+                    try await Task.sleep(for: .seconds(1))
+                } catch {
+                    
+                }}
         } while !done
         done = false
         await status.setStatus(.ready)
@@ -170,18 +169,18 @@ class Machine {
         repeat {
             cpu.tick()
         } while !cpu.wait
-
+        
         if let l = cpu.log.last {
             le.inst = l.op.disassemble(l)
         }
-
+        
         await status.setNextPc(cpu.regs.PC)
         await status.updateRegs(cpu.regs)
         await status.appendLog(le)
         await status.setBitmap(draw(display:bus.getBlock(addr: 0x4000, length: 0x4000)))
     }
     
-    func resetMemory() async {
+    func resetMemory() {
         for i in 0...0xffff {
             bus.men[i] = 0
         }
@@ -240,22 +239,18 @@ class Machine {
 }
 
 class SimpleBus: Bus {
-    var men :[UInt8]
+    var men = Men()
     var addr :UInt16 = 0
     var data :UInt8 = 0
     
-    init(men: [UInt8]) {
-        self.men = men
-    }
-    
     func readMemory() {
         data = men[Int(addr)]
-//        print("MR",addr.toHex(),data.toHex())
+        //        print("MR",addr.toHex(),data.toHex())
     }
     
     func writeMemory() {
         men[Int(addr)] = data
-//        print("MW",addr.toHex(),data.toHex())
+        //        print("MW",addr.toHex(),data.toHex())
     }
     
     func writeToMemory(_ addr: UInt16, _ data: UInt8) { fatalError() }
@@ -270,5 +265,29 @@ class SimpleBus: Bus {
             res[Int(idx)] = men[Int(addr&+idx)]
         }
         return res
+    }
+}
+
+struct Men {
+    var lock = NSLock()
+    var men = Array(repeating: UInt8(0), count: Int(0x10000))
+    
+    subscript(index: Int) -> UInt8 {
+        get {
+            lock.lock()
+            defer { lock.unlock() }
+            return men[index]
+        }
+        set(newValue) {
+            lock.lock()
+            defer { lock.unlock() }
+            men[index] = newValue
+        }
+    }
+
+    subscript(range: Range<Int>) -> [UInt8] {
+        lock.lock()
+        defer { lock.unlock() }
+        return Array(men[range])
     }
 }

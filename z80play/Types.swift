@@ -89,6 +89,25 @@ class Op: Hashable, Identifiable {
             hasher.combine(arg.description)
         }
     }
+    
+    func dump() -> String{
+        if self.valid {
+            if self.inst is Inst {
+                let dump = self.bytes.map({$0.toHexShort()}).joined(separator: " ")
+//                let dis = z80InstructionSet.shared.disassembler(data: self.bytes)
+                return "\(self.pc.toHex()) \(dump)"
+//                    .help("\(dis)\n\(self.description)")
+//                    .background((status.nextPc == self.pc) ? .green : .clear)
+            } else if self.inst is DB {
+                let dump = self.bytes.map({$0.toHexShort()}).joined(separator: " ")
+                return "\(self.pc.toHex()) \(dump)"
+//                    .help(dump.subSequences(of:3*10).joined(separator: "\n"))
+            } else {
+                return("")
+            }
+        }
+        return " x "
+    }
 }
 
 extension Op: CustomStringConvertible {

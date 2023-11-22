@@ -38,7 +38,7 @@ struct DebuggerMemory : View {
     @ObservedObject var model: DebuggerMemoryModel
 
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack {
             HStack{
                 Button("<<") {
                     model.start.addr &-= 16 * 16
