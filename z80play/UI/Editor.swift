@@ -25,15 +25,23 @@ struct Editor: NSViewRepresentable {
             return scrollView
         }
         
-        textView.delegate = context.coordinator
-        textView.textStorage?.append(NSAttributedString(string: text))
-
         let lineNumberView = LineNumberRulerView(textView: textView, machine: machine)
         lineNumberView.clipsToBounds = true
         
         scrollView.verticalRulerView = lineNumberView
         scrollView.hasVerticalRuler = true
         scrollView.rulersVisible = true
+        scrollView.hasHorizontalScroller = true
+        
+        textView.maxSize = NSMakeSize(.greatestFiniteMagnitude, .greatestFiniteMagnitude)
+        textView.isHorizontallyResizable = true
+        textView.delegate = context.coordinator
+        textView.allowsUndo = true
+        
+        textView.textStorage?.append(NSAttributedString(string: text,attributes: validLineAttributes))
+
+        textView.textContainer?.widthTracksTextView = false
+        textView.textContainer?.containerSize = NSMakeSize(.greatestFiniteMagnitude, .greatestFiniteMagnitude)
 
         context.coordinator.scrollView = scrollView
         context.coordinator.lineNumberView = lineNumberView
@@ -54,6 +62,7 @@ struct Editor: NSViewRepresentable {
             return
         }
         
+        text.beginEditing()
         let code = text.string
         text.setAttributes(validLineAttributes, range: NSMakeRange(0, code.count))
         for (i, line) in code.split(separator: "\n",omittingEmptySubsequences: false).enumerated() {
@@ -71,6 +80,7 @@ struct Editor: NSViewRepresentable {
                 }
             }
         }
+        text.endEditing()
         
         lineNumberView.needsDisplay = true
     }
@@ -98,6 +108,10 @@ struct Editor: NSViewRepresentable {
 
 class LineNumberRulerView: NSRulerView {
     var machine: MachineStatus
+    private lazy var area = makeTrackingArea()
+    private var hoverPoint = NSPoint.out
+    private var hoverLine = Int.max
+    private let pauseSymbol = NSImage(systemSymbolName: "pause", accessibilityDescription: "pause")!
 
     init(textView: NSTextView, machine: MachineStatus) {
         self.machine = machine
@@ -107,6 +121,7 @@ class LineNumberRulerView: NSRulerView {
         let testStr = NSAttributedString(string: "0x0000 00 00 00 00",
                                          attributes: [NSAttributedString.Key.font : font as Any])
 
+        print("-",testStr.size().width)
         self.ruleThickness = testStr.size().width + 10
     }
     
@@ -114,18 +129,50 @@ class LineNumberRulerView: NSRulerView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    public override func updateTrackingAreas() {
+       removeTrackingArea(area)
+       area = makeTrackingArea()
+       addTrackingArea(area)
+    }
     
+    private func makeTrackingArea() -> NSTrackingArea {
+        return NSTrackingArea(rect: bounds, options: [.mouseMoved, .mouseEnteredAndExited, .activeInKeyWindow], owner: self, userInfo: nil)
+    }
+
+    override func mouseMoved(with event: NSEvent) {
+        hoverPoint = event.locationInWindow
+        hoverPoint = self.convert(hoverPoint, from: self)
+        hoverPoint.y = self.bounds.maxY - hoverPoint.y;
+        needsDisplay = true
+    }
+    
+    override func mouseExited(with event: NSEvent) {
+        hoverLine = .max
+        hoverPoint = .out
+        needsDisplay = true
+    }
+    
+    override func mouseDown(with event: NSEvent) {
+        if machine.ops.indices.contains(hoverLine) {
+            if let inst = machine.ops[hoverLine].inst as? Inst {
+                inst.breakPoint.toggle()
+                needsDisplay = true
+            }
+        }
+    }
+    
+    func drawLineNumber(_ lineNumberString:String, y:CGFloat) {
+        let attString = NSAttributedString(string: lineNumberString, attributes: lineNumberAttributes)
+        attString.draw(at: NSPoint(x: 5, y: y))
+    }
+
     override func drawHashMarksAndLabels(in rect: NSRect) {
-        
+        hoverLine = Int.max
         if let textView = self.clientView as? NSTextView {
             if let layoutManager = textView.layoutManager {
                 
                 let relativePoint = self.convert(NSZeroPoint, from: textView)
                 
-                let drawLineNumber = { (lineNumberString:String, y:CGFloat) in
-                    let attString = NSAttributedString(string: lineNumberString, attributes: lineNumberAttributes)
-                    attString.draw(at: NSPoint(x: 5, y: relativePoint.y + y))
-                }
                 
                 let visibleGlyphRange = layoutManager.glyphRange(forBoundingRect: textView.visibleRect, in: textView.textContainer!)
                 let firstVisibleGlyphCharacterIndex = layoutManager.characterIndexForGlyph(at: visibleGlyphRange.location)
@@ -156,25 +203,46 @@ class LineNumberRulerView: NSRulerView {
                         
                         // Range of current "line of glyphs". If a line is wrapped,
                         // then it will have more than one "line of glyphs"
-                        let lineRect = layoutManager.lineFragmentRect(forGlyphAt: glyphIndexForGlyphLine, effectiveRange: &effectiveRange, withoutAdditionalLayout: true)
-                        
-                        if glyphLineCount > 0 {
-                            drawLineNumber("", lineRect.minY)
-                        } else {
+                        let sourceRect = layoutManager.lineFragmentRect(forGlyphAt: glyphIndexForGlyphLine, effectiveRange: &effectiveRange, withoutAdditionalLayout: true)
+                        var lineRect = NSMakeRect(sourceRect.minX, sourceRect.minY, ruleThickness, sourceRect.height)
+                        lineRect = lineRect.offsetBy(dx: 0, dy: relativePoint.y);
+
+                        if glyphLineCount == 0 {
                             if machine.ops.indices.contains(lineNumber-1){
                                 let op = machine.ops[lineNumber-1]
-                                if op.inst is Inst && op.valid {
-                                    if op.pc == machine.nextPc {
-                                        NSColor.green.set()
-                                        let line = NSBezierPath()
-                                        line.move(to: NSPoint(x: lineRect.minX, y: relativePoint.y + lineRect.minY))
-                                        line.line(to: NSPoint(x: lineRect.minX, y: relativePoint.y + lineRect.maxY))
-                                        line.line(to: NSPoint(x: lineRect.maxX, y: relativePoint.y + lineRect.maxY))
-                                        line.line(to: NSPoint(x: lineRect.maxX, y: relativePoint.y + lineRect.minY))
-                                        line.lineWidth = 1
-                                        line.fill()
+                                if op.valid {
+                                    if let inst = op.inst as? Inst {
+                                        if op.pc == machine.nextPc {
+                                            NSColor.green.set()
+                                            let line = NSBezierPath()
+                                            line.move(to: NSPoint(x: lineRect.minX, y: lineRect.minY))
+                                            line.line(to: NSPoint(x: lineRect.minX, y: lineRect.maxY))
+                                            line.line(to: NSPoint(x: lineRect.maxX, y: lineRect.maxY))
+                                            line.line(to: NSPoint(x: lineRect.maxX, y: lineRect.minY))
+                                            line.lineWidth = 1
+                                            line.fill()
+                                        }
+                                        
+                                        let imgRect = NSMakeRect(lineRect.maxX - lineRect.height, lineRect.minY, lineRect.height, lineRect.height)
+
+                                        if NSPointInRect(hoverPoint, imgRect) {
+                                            hoverLine = lineNumber-1
+                                        }
+
+                                        if inst.breakPoint {
+                                            drawPause(in: imgRect, alpha: 0.8)
+                                        } else if NSPointInRect(hoverPoint, lineRect) {
+                                            if NSPointInRect(hoverPoint, imgRect) {
+                                                drawPause(in: imgRect, alpha: 0.3)
+                                            } else {
+                                                drawPause(in: imgRect, alpha: 0.1)
+                                            }
+                                        }
+                                        
+                                        drawLineNumber("\(op.dump())", y: lineRect.minY)
+                                    } else if op.inst is DB {
+                                        drawLineNumber("\(op.pc.toHex())", y: lineRect.minY)
                                     }
-                                    drawLineNumber("\(op.dump())", lineRect.minY)
                                 }
                             }
                         }
@@ -190,4 +258,17 @@ class LineNumberRulerView: NSRulerView {
             }
         }
     }
+    
+    private func drawPause(in rect: NSRect, alpha: Double) {
+        let path = NSBezierPath(ovalIn: rect.insetBy(dx: 1, dy: 1))
+        NSColor.red.withAlphaComponent(alpha).setFill()
+        path.fill()
+        NSColor.red.setStroke()
+        path.stroke()
+        pauseSymbol.draw(in: rect.insetBy(dx: 3, dy: 3))
+    }
+}
+
+extension CGPoint {
+    public static var out: CGPoint { get { CGPoint(x: -1, y: -1) } }
 }

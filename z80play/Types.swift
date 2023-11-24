@@ -21,7 +21,9 @@ extension Token: CustomStringConvertible {
 }
 
 
-class Inst: Token {}
+class Inst: Token {
+    var breakPoint = false
+}
 
 class Org: Token {
     let pc: UInt16

@@ -18,21 +18,6 @@ struct LogEntry: Identifiable {
     var ops: [String] = []
 }
 
-@MainActor class BusDebugger: DebuggerMemoryModel {
-    var bus: Bus
-    
-    init(bus: Bus) {
-        self.bus = bus
-        super.init()
-    }
-    
-    override func update() {
-        //        Task {
-        //            data = bus.getBlock(addr: start.addr, length: count)
-        //        }
-    }
-}
-
 class MachineStatus: ObservableObject{
     @MainActor @Published var registersData = RegistersData()
     @MainActor @Published var nextPc = UInt16(0)
@@ -115,10 +100,8 @@ class Machine {
         
         ops.forEach { op in
             if op.valid {
-                if op.inst is Inst {
-                    op.bytes.enumerated().forEach { byte in
-                        bus.men[Int(op.pc)+byte.offset] = byte.element
-                    }
+                op.bytes.enumerated().forEach { byte in
+                    bus.men[Int(op.pc)+byte.offset] = byte.element
                 }
             }
         }
@@ -130,7 +113,7 @@ class Machine {
         
     func step() async {
         await status.setStatus(.runing)
-        await doStep()
+        _ = await doStep()
         await status.setStatus(.ready)
     }
     
@@ -138,13 +121,18 @@ class Machine {
         await status.setStatus(.runing)
         done = false
         repeat {
-            await self.doStep()
-            if !fast {
-                do {
-                    try await Task.sleep(for: .seconds(1))
-                } catch {
-                    
-                }}
+            let nextPc = await self.doStep()
+            if let nextop = await status.ops.first(where: { op in op.pc == nextPc }) {
+                if ((nextop.inst as? Inst)?.breakPoint ?? false) {
+                    done = true
+                } else {
+                    if !fast {
+                        do { try await Task.sleep(for: .seconds(1)) } catch { }
+                    }
+                }
+            } else {
+                done = true
+            }
         } while !done
         done = false
         await status.setStatus(.ready)
@@ -161,7 +149,7 @@ class Machine {
         await status.resetLog()
     }
     
-    private func doStep() async {
+    private func doStep() async -> UInt16 {
         var le = LogEntry(pc: cpu.regs.PC.toHex())
         
         cpu.wait = false
@@ -178,6 +166,7 @@ class Machine {
         await status.updateRegs(cpu.regs)
         await status.appendLog(le)
         await status.setBitmap(draw(display:bus.getBlock(addr: 0x4000, length: 0x4000)))
+        return cpu.regs.PC
     }
     
     func resetMemory() {

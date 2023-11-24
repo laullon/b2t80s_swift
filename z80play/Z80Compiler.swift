@@ -33,7 +33,7 @@ class Z80Compiler {
 //                    print(opCode, (prefix + [opCode.code,0x00,0x00]).map { $0.toHex() })
                     let line = z80InstructionSet.shared.disassembler(data: prefix + [opCode.code,0x00,0x00])
                     let op = compile_line(line)
-                    op.length = UInt16(opCode.len)
+                    op.length = UInt16(opCode.len) + UInt16(prefix.count)
                     op.bytes.append(contentsOf: prefix)
                     op.bytes.append(opCode.code)
                     validOps.insert(op)
