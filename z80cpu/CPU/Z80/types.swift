@@ -39,12 +39,16 @@ class FetchedData {
 }
 
 extension Array where Element == FetchedData {
-
     func dump() -> String {
         return self.reduce("") {"\($0)\n\($1.pc.toHex()) - \($1.op.disassemble($1))"}.trimmingCharacters(in: .newlines)
     }
 }
 
+extension Array where Element == UInt8 {
+    func dump() -> String {
+        return self.reduce("") {"\($0) \($1.toHexShort())"}.trimmingCharacters(in: .whitespaces)
+    }
+}
 
 struct opCode {
     var name       :String

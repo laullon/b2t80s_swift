@@ -51,6 +51,7 @@
 		205C35B22AFBD5FD002A2868 /* bitmap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 204AC9992A9E295C008FF2F8 /* bitmap.swift */; };
 		20759FF72AA34CC200E0969D /* cassete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20759FF62AA34CC200E0969D /* cassete.swift */; };
 		20759FF92AA34EE700E0969D /* tap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20759FF82AA34EE700E0969D /* tap.swift */; };
+		2079FD932B19E8B8003629B0 /* Watch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2079FD922B19E8B8003629B0 /* Watch.swift */; };
 		208184852AE12D5A008C3D47 /* misc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 208184842AE12D5A008C3D47 /* misc.swift */; };
 		208184872AE13C80008C3D47 /* DebuggerMemory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 208184862AE13C80008C3D47 /* DebuggerMemory.swift */; };
 		2083689D2A8E597400E47E0B /* b2t80sApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2083689C2A8E597400E47E0B /* b2t80sApp.swift */; };
@@ -162,6 +163,7 @@
 		20759FF62AA34CC200E0969D /* cassete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cassete.swift; sourceTree = "<group>"; };
 		20759FF82AA34EE700E0969D /* tap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = tap.swift; sourceTree = "<group>"; };
 		20759FFA2AA393F600E0969D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		2079FD922B19E8B8003629B0 /* Watch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Watch.swift; sourceTree = "<group>"; };
 		208184842AE12D5A008C3D47 /* misc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = misc.swift; sourceTree = "<group>"; };
 		208184862AE13C80008C3D47 /* DebuggerMemory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebuggerMemory.swift; sourceTree = "<group>"; };
 		208368992A8E597400E47E0B /* b2t80s.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = b2t80s.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -478,6 +480,7 @@
 				20490C462AFEB63F0036059F /* Screen.swift */,
 				20297EE22B024660000C6C9B /* BinCodeViewer.swift */,
 				20297EE42B037CCF000C6C9B /* Editor.swift */,
+				2079FD922B19E8B8003629B0 /* Watch.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -746,6 +749,7 @@
 				200B83E92AF64F9100430EF5 /* registers.swift in Sources */,
 				200B83E72AF64F9100430EF5 /* scheduler.swift in Sources */,
 				200B83EB2AF64F9100430EF5 /* ops.swift in Sources */,
+				2079FD932B19E8B8003629B0 /* Watch.swift in Sources */,
 				20D5DEDE2AF9098B0048DB83 /* AddrSelector.swift in Sources */,
 				200B83E82AF64F9100430EF5 /* types.swift in Sources */,
 				200B83E62AF64F9100430EF5 /* bus.swift in Sources */,

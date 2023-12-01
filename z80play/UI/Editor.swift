@@ -111,7 +111,13 @@ class LineNumberRulerView: NSRulerView {
     private lazy var area = makeTrackingArea()
     private var hoverPoint = NSPoint.out
     private var hoverLine = Int.max
-    private let pauseSymbol = NSImage(systemSymbolName: "pause", accessibilityDescription: "pause")!
+    private let pauseSymbol = NSImage(systemSymbolName: "pause.circle", accessibilityDescription: "pause")!.withSymbolConfiguration(.init(paletteColors: [.black, .lightGray]))!
+    private let pauseSymbol_h = NSImage(systemSymbolName: "pause.circle", accessibilityDescription: "pause")!
+    private let pauseSymbol_s = NSImage(systemSymbolName: "pause.circle.fill", accessibilityDescription: "pause")!
+
+    private let eyeSymbol = NSImage(systemSymbolName: "eye.circle",variableValue: 0, accessibilityDescription: "watch")!.withSymbolConfiguration(.init(paletteColors: [.black, .lightGray]))!
+    private let eyeSymbol_h = NSImage(systemSymbolName: "eye.circle", accessibilityDescription: "pause")!
+    private let eyeSymbol_s = NSImage(systemSymbolName: "eye.circle.fill", accessibilityDescription: "pause")!
 
     init(textView: NSTextView, machine: MachineStatus) {
         self.machine = machine
@@ -120,9 +126,14 @@ class LineNumberRulerView: NSRulerView {
         
         let testStr = NSAttributedString(string: "0x0000 00 00 00 00",
                                          attributes: [NSAttributedString.Key.font : font as Any])
-
+        
         print("-",testStr.size().width)
         self.ruleThickness = testStr.size().width + 10
+        
+//        var config = NSImage.SymbolConfiguration(textStyle: .body, scale: .large)
+//        config = config.applying(.init(paletteColors: [.systemTeal, .systemGray]))
+//        eyeSymbol.image = eyeSymbol.withSymbolConfiguration(config)
+
     }
     
     required init(coder: NSCoder) {
@@ -130,15 +141,15 @@ class LineNumberRulerView: NSRulerView {
     }
     
     public override func updateTrackingAreas() {
-       removeTrackingArea(area)
-       area = makeTrackingArea()
-       addTrackingArea(area)
+        removeTrackingArea(area)
+        area = makeTrackingArea()
+        addTrackingArea(area)
     }
     
     private func makeTrackingArea() -> NSTrackingArea {
         return NSTrackingArea(rect: bounds, options: [.mouseMoved, .mouseEnteredAndExited, .activeInKeyWindow], owner: self, userInfo: nil)
     }
-
+    
     override func mouseMoved(with event: NSEvent) {
         hoverPoint = event.locationInWindow
         hoverPoint = self.convert(hoverPoint, from: self)
@@ -157,6 +168,10 @@ class LineNumberRulerView: NSRulerView {
             if let inst = machine.ops[hoverLine].inst as? Inst {
                 inst.breakPoint.toggle()
                 needsDisplay = true
+            } else if let db = machine.ops[hoverLine].inst as? DB {
+                db.watch.toggle()
+                machine.updateWatchedMemory()
+                needsDisplay = true
             }
         }
     }
@@ -165,7 +180,7 @@ class LineNumberRulerView: NSRulerView {
         let attString = NSAttributedString(string: lineNumberString, attributes: lineNumberAttributes)
         attString.draw(at: NSPoint(x: 5, y: y))
     }
-
+    
     override func drawHashMarksAndLabels(in rect: NSRect) {
         hoverLine = Int.max
         if let textView = self.clientView as? NSTextView {
@@ -206,11 +221,17 @@ class LineNumberRulerView: NSRulerView {
                         let sourceRect = layoutManager.lineFragmentRect(forGlyphAt: glyphIndexForGlyphLine, effectiveRange: &effectiveRange, withoutAdditionalLayout: true)
                         var lineRect = NSMakeRect(sourceRect.minX, sourceRect.minY, ruleThickness, sourceRect.height)
                         lineRect = lineRect.offsetBy(dx: 0, dy: relativePoint.y);
-
+                        
                         if glyphLineCount == 0 {
                             if machine.ops.indices.contains(lineNumber-1){
                                 let op = machine.ops[lineNumber-1]
                                 if op.valid {
+                                    
+                                    let imgRect = NSMakeRect(lineRect.maxX - lineRect.height, lineRect.minY, lineRect.height, lineRect.height)
+                                    if NSPointInRect(hoverPoint, imgRect) {
+                                        hoverLine = lineNumber-1
+                                    }
+                                    
                                     if let inst = op.inst as? Inst {
                                         if op.pc == machine.nextPc {
                                             NSColor.green.set()
@@ -223,24 +244,28 @@ class LineNumberRulerView: NSRulerView {
                                             line.fill()
                                         }
                                         
-                                        let imgRect = NSMakeRect(lineRect.maxX - lineRect.height, lineRect.minY, lineRect.height, lineRect.height)
-
-                                        if NSPointInRect(hoverPoint, imgRect) {
-                                            hoverLine = lineNumber-1
-                                        }
-
                                         if inst.breakPoint {
-                                            drawPause(in: imgRect, alpha: 0.8)
+                                            drawIcon(in: imgRect, alpha: 0.8, icon: pauseSymbol_s)
                                         } else if NSPointInRect(hoverPoint, lineRect) {
                                             if NSPointInRect(hoverPoint, imgRect) {
-                                                drawPause(in: imgRect, alpha: 0.3)
+                                                drawIcon(in: imgRect, alpha: 0.3, icon: pauseSymbol_h)
                                             } else {
-                                                drawPause(in: imgRect, alpha: 0.1)
+                                                drawIcon(in: imgRect, alpha: 0.1, icon: pauseSymbol)
                                             }
                                         }
                                         
                                         drawLineNumber("\(op.dump())", y: lineRect.minY)
-                                    } else if op.inst is DB {
+                                        
+                                    } else if let db = op.inst as? DB {
+                                        if db.watch {
+                                            drawIcon(in: imgRect, alpha: 0.8, icon: eyeSymbol_s)
+                                        } else if NSPointInRect(hoverPoint, lineRect) {
+                                            if NSPointInRect(hoverPoint, imgRect) {
+                                                drawIcon(in: imgRect, alpha: 0.3, icon: eyeSymbol_h)
+                                            } else {
+                                                drawIcon(in: imgRect, alpha: 0.1, icon: eyeSymbol)
+                                            }
+                                        }
                                         drawLineNumber("\(op.pc.toHex())", y: lineRect.minY)
                                     }
                                 }
@@ -260,12 +285,20 @@ class LineNumberRulerView: NSRulerView {
     }
     
     private func drawPause(in rect: NSRect, alpha: Double) {
-        let path = NSBezierPath(ovalIn: rect.insetBy(dx: 1, dy: 1))
-        NSColor.red.withAlphaComponent(alpha).setFill()
-        path.fill()
-        NSColor.red.setStroke()
-        path.stroke()
-        pauseSymbol.draw(in: rect.insetBy(dx: 3, dy: 3))
+        drawIcon(in: rect, alpha: alpha, icon: pauseSymbol)
+    }
+    
+    private func drawEye(in rect: NSRect, alpha: Double) {
+        drawIcon(in: rect, alpha: alpha, icon: eyeSymbol)
+    }
+    
+    private func drawIcon(in rect: NSRect, alpha: Double, icon: NSImage) {
+//        let path = NSBezierPath(ovalIn: rect.insetBy(dx: 1, dy: 1))
+//        NSColor.red.withAlphaComponent(alpha).setFill()
+//        path.fill()
+//        NSColor.red.setStroke()
+//        path.stroke()
+        icon.draw(in: rect)
     }
 }
 

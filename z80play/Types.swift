@@ -34,6 +34,7 @@ class Org: Token {
 }
 
 class DB: Token {
+    var watch = false
     init() {
         super.init(name: "nn")
     }

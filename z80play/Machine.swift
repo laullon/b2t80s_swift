@@ -18,6 +18,13 @@ struct LogEntry: Identifiable {
     var ops: [String] = []
 }
 
+struct WatchEntry: Identifiable {
+    let id = UUID()
+    var pc: String
+    var label: String
+    var data: String
+}
+
 class MachineStatus: ObservableObject{
     @MainActor @Published var registersData = RegistersData()
     @MainActor @Published var nextPc = UInt16(0)
@@ -26,6 +33,8 @@ class MachineStatus: ObservableObject{
     @MainActor @Published var log: [LogEntry] = []
     @MainActor @Published var status = Status.ready
     @MainActor @Published var bitmap: Bitmap?
+    @MainActor @Published var watchedMemory: [WatchEntry] = []
+    
     var memDebugger = DebuggerMemoryModel()
     var spriteDebugger = DebuggerMemoryModel()
     
@@ -36,6 +45,22 @@ class MachineStatus: ObservableObject{
     @MainActor func setBitmap(_ bitmap: Bitmap) {
         self.bitmap = bitmap
     }
+    
+    @MainActor func updateWatchedMemory() {
+        var watched = [WatchEntry]()
+        ops.filter { $0.inst is DB }.forEach { op in
+            if let db = op.inst as? DB {
+                if db.watch {
+                    watched.append(WatchEntry(pc: op.pc.toHex(),
+                                              label: symbols.first(where: {$0.addr==op.pc})!.name,
+                                              data: memDebugger.updater!(op.pc, op.length).dump()))
+                }
+            }
+        }
+        watchedMemory = watched
+    }
+    
+    
     
     @MainActor func updateCode(_ ops:[Op], symbols : [Symbol]) {
         self.ops = ops
@@ -166,6 +191,8 @@ class Machine {
         await status.updateRegs(cpu.regs)
         await status.appendLog(le)
         await status.setBitmap(draw(display:bus.getBlock(addr: 0x4000, length: 0x4000)))
+        
+        await status.updateWatchedMemory()
         return cpu.regs.PC
     }
     

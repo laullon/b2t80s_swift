@@ -18,7 +18,9 @@ struct DebuggerPanel: View {
         VStack(alignment: .leading) {
             DebuggerRegisters(debugData: machine.registersData)
                 .fixedSize()
-            Spacer()
+            Divider()
+            Watch(status: machine)
+            Divider()
             TabView {
                 DebuggerMemory(model: machine.memDebugger)
                     .tabItem {
