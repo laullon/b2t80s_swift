@@ -8,10 +8,10 @@
 import SwiftUI
 
 struct DebuggerPanel: View {
-    @ObservedObject var machine: MachineStatus
+    @ObservedObject var machine: Machine
     
     init(machine: Machine) {
-        self.machine = machine.status
+        self.machine = machine
     }
     
     var body: some View {
@@ -19,7 +19,7 @@ struct DebuggerPanel: View {
             DebuggerRegisters(debugData: machine.registersData)
                 .fixedSize()
             Divider()
-            Watch(status: machine)
+            Watch(machine: machine)
             Divider()
             TabView {
                 DebuggerMemory(model: machine.memDebugger)

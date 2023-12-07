@@ -27,7 +27,7 @@ var palette: [BitmapColor] =  [
 ]
 
 struct Screen: View {
-    @ObservedObject var machine: MachineStatus
+    @ObservedObject var machine: Machine
 
     var body: some View {
         image(machine.bitmap)
@@ -47,5 +47,5 @@ struct Screen: View {
 }
 
 #Preview {
-    Screen(machine: MachineStatus())
+    Screen(machine: Machine())
 }

@@ -27,12 +27,11 @@
 		200B83ED2AF64F9100430EF5 /* test.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20C8C3922A92154100188246 /* test.swift */; };
 		200B83EE2AF64F9100430EF5 /* diss.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20A67ADB2A9A079E0012CEAB /* diss.swift */; };
 		20283D772AFA4620005A518D /* DebuggerPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20283D762AFA4620005A518D /* DebuggerPanel.swift */; };
-		20297EE32B024660000C6C9B /* BinCodeViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20297EE22B024660000C6C9B /* BinCodeViewer.swift */; };
 		20297EE52B037CCF000C6C9B /* Editor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20297EE42B037CCF000C6C9B /* Editor.swift */; };
 		203510B92AB0A8310069B16D /* sound.swift in Sources */ = {isa = PBXBuildFile; fileRef = 203510B82AB0A8310069B16D /* sound.swift */; };
 		203882972AA9E5C000878CD9 /* formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 203882962AA9E5C000878CD9 /* formatters.swift */; };
 		203FC8CD2AC2BFDD00F7E0A1 /* breakPointsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 203FC8CC2AC2BFDD00F7E0A1 /* breakPointsView.swift */; };
-		20490C402AFE41B00036059F /* Machine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20490C3F2AFE41B00036059F /* Machine.swift */; };
+		20490C402AFE41B00036059F /* MachineEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20490C3F2AFE41B00036059F /* MachineEngine.swift */; };
 		20490C412AFE52A10036059F /* 48k.rom in Resources */ = {isa = PBXBuildFile; fileRef = 20A67AE62A9DEA200012CEAB /* 48k.rom */; };
 		20490C452AFEAED10036059F /* 48k.snap in Resources */ = {isa = PBXBuildFile; fileRef = 20490C442AFEAED10036059F /* 48k.snap */; };
 		20490C472AFEB63F0036059F /* Screen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20490C462AFEB63F0036059F /* Screen.swift */; };
@@ -136,12 +135,11 @@
 		200B83C92AF64DF600430EF5 /* z80cpu.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = z80cpu.docc; sourceTree = "<group>"; };
 		200C3B362A9F72DE00B03EE4 /* tests.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = tests.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		20283D762AFA4620005A518D /* DebuggerPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebuggerPanel.swift; sourceTree = "<group>"; };
-		20297EE22B024660000C6C9B /* BinCodeViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinCodeViewer.swift; sourceTree = "<group>"; };
 		20297EE42B037CCF000C6C9B /* Editor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Editor.swift; sourceTree = "<group>"; };
 		203510B82AB0A8310069B16D /* sound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = sound.swift; sourceTree = "<group>"; };
 		203882962AA9E5C000878CD9 /* formatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = formatters.swift; sourceTree = "<group>"; };
 		203FC8CC2AC2BFDD00F7E0A1 /* breakPointsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = breakPointsView.swift; sourceTree = "<group>"; };
-		20490C3F2AFE41B00036059F /* Machine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Machine.swift; sourceTree = "<group>"; };
+		20490C3F2AFE41B00036059F /* MachineEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MachineEngine.swift; sourceTree = "<group>"; };
 		20490C442AFEAED10036059F /* 48k.snap */ = {isa = PBXFileReference; lastKnownFileType = file; path = 48k.snap; sourceTree = "<group>"; };
 		20490C462AFEB63F0036059F /* Screen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Screen.swift; sourceTree = "<group>"; };
 		204AC9992A9E295C008FF2F8 /* bitmap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = bitmap.swift; sourceTree = "<group>"; };
@@ -303,7 +301,7 @@
 				2052B75B2AF63DFF00E67C7B /* z80play.entitlements */,
 				2052B74F2AF63DFD00E67C7B /* z80playApp.swift */,
 				2052B7512AF63DFD00E67C7B /* z80playDocument.swift */,
-				20490C3F2AFE41B00036059F /* Machine.swift */,
+				20490C3F2AFE41B00036059F /* MachineEngine.swift */,
 			);
 			path = z80play;
 			sourceTree = "<group>";
@@ -478,7 +476,6 @@
 				20283D762AFA4620005A518D /* DebuggerPanel.swift */,
 				20B589E42AFE3B4800688859 /* ToolBar.swift */,
 				20490C462AFEB63F0036059F /* Screen.swift */,
-				20297EE22B024660000C6C9B /* BinCodeViewer.swift */,
 				20297EE42B037CCF000C6C9B /* Editor.swift */,
 				2079FD922B19E8B8003629B0 /* Watch.swift */,
 			);
@@ -737,9 +734,8 @@
 				205C35B22AFBD5FD002A2868 /* bitmap.swift in Sources */,
 				200B83EE2AF64F9100430EF5 /* diss.swift in Sources */,
 				2052B7502AF63DFD00E67C7B /* z80playApp.swift in Sources */,
-				20490C402AFE41B00036059F /* Machine.swift in Sources */,
+				20490C402AFE41B00036059F /* MachineEngine.swift in Sources */,
 				20297EE52B037CCF000C6C9B /* Editor.swift in Sources */,
-				20297EE32B024660000C6C9B /* BinCodeViewer.swift in Sources */,
 				200B83EC2AF64F9100430EF5 /* opsCodes.swift in Sources */,
 				20D5DEE22AF9376E0048DB83 /* DebuggerRegisters.swift in Sources */,
 				2052B77C2AF6454700E67C7B /* Z80Compiler.swift in Sources */,

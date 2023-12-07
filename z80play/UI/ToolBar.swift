@@ -8,12 +8,10 @@
 import SwiftUI
 
 struct ToolBar: View {
-    var machine: Machine
-    @ObservedObject var status: MachineStatus
-
+    @ObservedObject private var machine: Machine
+    
     init(machine: Machine) {
         self.machine = machine
-        self.status = machine.status
     }
     
     var body: some View {
@@ -24,7 +22,7 @@ struct ToolBar: View {
                 Image(systemName: "backward.end.alt")
             }
             .help("Reset")
-            .disabled(status.status != .ready)
+            .disabled(machine.status != .ready)
             
             Button() {
                 Task { await machine.start(fast: false) }
@@ -32,7 +30,7 @@ struct ToolBar: View {
                 Image(systemName: "play")
             }
             .help("Run")
-            .disabled(status.status != .ready)
+            .disabled(machine.status != .ready)
             
             Button() {
                 Task { await machine.start(fast: true) }
@@ -40,7 +38,7 @@ struct ToolBar: View {
                 Image(systemName: "forward")
             }
             .help("Run")
-            .disabled(status.status != .ready)
+            .disabled(machine.status != .ready)
             
             Button() {
                 Task { await machine.step() }
@@ -48,7 +46,7 @@ struct ToolBar: View {
                 Image(systemName: "forward.frame")
             }
             .help("Step")
-            .disabled(status.status != .ready)
+            .disabled(machine.status != .ready)
             
             Button() {
                 machine.stop()
@@ -56,11 +54,11 @@ struct ToolBar: View {
                 Image(systemName: "pause")
             }
             .help("Pause")
-            .disabled(status.status != .runing)
+            .disabled(machine.status != .runing)
         }
     }
 }
-    
-    #Preview {
-        ToolBar(machine: Machine())
-    }
+
+#Preview {
+    ToolBar(machine: Machine())
+}

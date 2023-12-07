@@ -8,10 +8,10 @@
 import SwiftUI
 
 struct Watch: View {
-    @ObservedObject var status: MachineStatus
+    @ObservedObject var machine: Machine
     
     var body: some View {
-        Table(status.watchedMemory) {
+        Table(machine.watchedMemory) {
             TableColumn("Label", value: \.label)
             TableColumn("PC", value: \.pc)
             TableColumn("", value: \.data)
@@ -20,7 +20,7 @@ struct Watch: View {
 }
 
 #Preview {
-    let status = Machine().status
+    let machine = Machine()
     var ops = [WatchEntry]()
     for i in 0..<5 {
         let data = WatchEntry(pc: UInt16(1*0x0100).toHex(),
@@ -28,6 +28,6 @@ struct Watch: View {
                               data: Array(repeating: UInt8(0), count: i).dump())
         ops.append(data)
     }
-    status.watchedMemory.append(contentsOf: ops)
-    return Watch(status: status)
+    machine.watchedMemory.append(contentsOf: ops)
+    return Watch(machine: machine)
 }

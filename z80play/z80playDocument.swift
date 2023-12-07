@@ -29,7 +29,6 @@ extension UTType {
 
 struct z80playDocument: FileDocument {
     var text: String
-    let machine = Machine()
             
     init(text: String = asm) {
         self.text = text

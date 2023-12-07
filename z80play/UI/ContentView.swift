@@ -9,25 +9,25 @@ import SwiftUI
 
 struct ContentView: View {
     @Binding var doc: z80playDocument
+    @StateObject private var machine = Machine()
     
     var body: some View {
         HStack {
-            Editor(text: $doc.text, machine: doc.machine.status)
+            Editor(text: $doc.text, machine: machine)
                 .inspector(isPresented: .constant(true), content: {
-                    DebuggerPanel(machine: doc.machine)
+                    DebuggerPanel(machine: machine)
                         .inspectorColumnWidth(455)
+                        .font(Font.system(size: 14,design: .monospaced))
                 })
         }
         .toolbar {
-            ToolBar(machine: doc.machine)
+            ToolBar(machine: machine)
         }
-        
-        .font(Font.system(size: 14,design: .monospaced))
         .onAppear() {
-            Task { await doc.machine.complie(code: doc.text) }
+            Task { await machine.complie(code: doc.text) }
         }
         .onChange(of: doc.text, {
-            Task { await doc.machine.complie(code: doc.text) }
+            Task { await machine.complie(code: doc.text) }
         })
         .background(.white)
     }
@@ -42,7 +42,7 @@ struct myLayout: Layout {
         let sizes = subviews.map { $0.sizeThatFits(.unspecified) }
         return Cache(sizes: sizes)
     }
-
+    
     func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout Cache) -> CGSize {
         return proposal.replacingUnspecifiedDimensions()
     }

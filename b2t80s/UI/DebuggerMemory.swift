@@ -11,6 +11,7 @@ class DebuggerMemoryModel:ObservableObject {
     @Published var symbols: [Symbol] = []
     @Published var data: [UInt8] = []
     @Published var start: Symbol = Symbol(addr: 0, name: "")
+    
     var count: UInt16 = 0
     var updater: ((_ start: UInt16, _ count:UInt16)->[UInt8])?
     

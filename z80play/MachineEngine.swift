@@ -25,28 +25,106 @@ struct WatchEntry: Identifiable {
     var data: String
 }
 
-class MachineStatus: ObservableObject{
-    @MainActor @Published var registersData = RegistersData()
-    @MainActor @Published var nextPc = UInt16(0)
-    @MainActor @Published var symbols : [Symbol] = []
-    @MainActor @Published var ops: [Op] = []
-    @MainActor @Published var log: [LogEntry] = []
-    @MainActor @Published var status = Status.ready
-    @MainActor @Published var bitmap: Bitmap?
-    @MainActor @Published var watchedMemory: [WatchEntry] = []
+@MainActor
+class Machine: ObservableObject{
+    @Published var registersData = RegistersData()
+    @Published var nextPc = UInt16(0)
+    @Published var symbols : [Symbol] = []
+    @Published var ops: [Op] = []
+    @Published var log: [LogEntry] = []
+    @Published var status = Status.ready
+    @Published var bitmap: Bitmap?
+    @Published var watchedMemory: [WatchEntry] = []
+    
+    private var engine = MachineEngine()
+    private var done = false
     
     var memDebugger = DebuggerMemoryModel()
     var spriteDebugger = DebuggerMemoryModel()
     
-    @MainActor func setStatus(_ status: Status) {
+    init() {
+        memDebugger.updater = dumpMemory
+        spriteDebugger.updater = dumpMemory
+    }
+    
+    func dumpMemory(_ start: UInt16, _ count:UInt16) -> [UInt8] {
+        engine.cpu.bus.getBlock(addr: start, length: count)
+    }
+    
+    func stop() {
+        done = true
+    }
+    
+    func reset() async {
+        engine.cpu.regs.PC = 0
+        setNextPc(engine.cpu.regs.PC)
+        resetLog()
+    }
+
+    func start(fast: Bool) async {
+        status = .runing
+        done = false
+        repeat {
+            let nextPc = await doStep()
+            if let nextop = ops.first(where: { op in op.pc == nextPc }) {
+                if ((nextop.inst as? Inst)?.breakPoint ?? false) {
+                    done = true
+                } else {
+                    if !fast {
+                        do { try await Task.sleep(for: .seconds(1)) } catch { }
+                    }
+                }
+            } else {
+                done = true
+            }
+        } while !done
+        done = false
+        status = .ready
+    }
+    
+    func resetMemory() {
+        engine.resetMemory()
+    }
+
+    func step() async {
+        status = .runing
+        _ = await doStep()
+        status = .ready
+    }
+
+    func doStep() async -> UInt16 {
+        let (pc, le) = await self.engine.doStep()
+        setNextPc(pc)
+        updateRegs(engine.cpu.regs)
+        appendLog(le)
+        setBitmap(await engine.getScreen())
+        updateWatchedMemory()
+        return pc
+    }
+    
+    func complie(code: String) async {
+        setStatus(.bussy)
+        
+        stop()
+        await reset()
+        resetMemory()
+        
+        let (ops,symbols) = engine.compile(code: code)
+                
+        setStatus(.ready)
+        setBitmap(await engine.getScreen())
+        updateCode(ops, symbols: symbols)
+    }
+
+    func setStatus(_ status: Status) {
         self.status = status
     }
     
-    @MainActor func setBitmap(_ bitmap: Bitmap) {
+    func setBitmap(_ bitmap: Bitmap) {
         self.bitmap = bitmap
     }
     
-    @MainActor func updateWatchedMemory() {
+    func updateWatchedMemory() {
         var watched = [WatchEntry]()
         ops.filter { $0.inst is DB }.forEach { op in
             if let db = op.inst as? DB {
@@ -60,40 +138,37 @@ class MachineStatus: ObservableObject{
         watchedMemory = watched
     }
     
-    
-    
-    @MainActor func updateCode(_ ops:[Op], symbols : [Symbol]) {
+    func updateCode(_ ops:[Op], symbols : [Symbol]) {
         self.ops = ops
         self.symbols = symbols
         memDebugger.update()
         spriteDebugger.update()
     }
     
-    @MainActor func setNextPc(_ nextPc: UInt16){
+    func setNextPc(_ nextPc: UInt16){
         self.nextPc = nextPc
         memDebugger.update()
         spriteDebugger.update()
     }
     
-    @MainActor func updateRegs(_ regs: Registers) {
+    func updateRegs(_ regs: Registers) {
         registersData.update(regs: regs)
     }
     
-    @MainActor func appendLog(_ le: LogEntry) {
+    func appendLog(_ le: LogEntry) {
         log.append(le)
     }
     
-    @MainActor func resetLog() {
+    func resetLog() {
         log.removeAll()
     }
 }
 
-class Machine {
-    var status: MachineStatus
+class MachineEngine {
     
     private var frame = UInt8(0)
     
-    private var cpu: z80
+    var cpu: z80
     private var bus = SimpleBus()
     
     private var compiler = Z80Compiler()
@@ -103,10 +178,6 @@ class Machine {
 
     init() {
         self.cpu = z80(bus)
-        
-        self.status = MachineStatus()
-        self.status.memDebugger.updater = dumpMemory(_:count:)
-        self.status.spriteDebugger.updater = dumpMemory(_:count:)
     }
     
 
@@ -114,15 +185,8 @@ class Machine {
         return Array(bus.men[(Int(start))..<(Int(start+count))])
     }
     
-    func complie(code: String) async  {
-        await status.setStatus(.bussy)
-        
-        stop()
-        await reset()
-        resetMemory()
-        
+    func compile(code: String) -> ([Op], [Symbol]) {
         let (ops,symbols) = compiler.compile(code)
-        
         ops.forEach { op in
             if op.valid {
                 op.bytes.enumerated().forEach { byte in
@@ -130,51 +194,10 @@ class Machine {
                 }
             }
         }
-        
-        await status.setStatus(.ready)
-        await status.setBitmap(draw(display:bus.getBlock(addr: 0x4000, length: 0x4000)))
-        await status.updateCode(ops, symbols: symbols)
+        return (ops,symbols)
     }
-        
-    func step() async {
-        await status.setStatus(.runing)
-        _ = await doStep()
-        await status.setStatus(.ready)
-    }
-    
-    func start(fast: Bool) async {
-        await status.setStatus(.runing)
-        done = false
-        repeat {
-            let nextPc = await self.doStep()
-            if let nextop = await status.ops.first(where: { op in op.pc == nextPc }) {
-                if ((nextop.inst as? Inst)?.breakPoint ?? false) {
-                    done = true
-                } else {
-                    if !fast {
-                        do { try await Task.sleep(for: .seconds(1)) } catch { }
-                    }
-                }
-            } else {
-                done = true
-            }
-        } while !done
-        done = false
-        await status.setStatus(.ready)
-    }
-    
-    func stop() {
-        done = true
-    }
-    
-    func reset() async {
-        cpu.regs.PC = 0
-        await status.setNextPc(0)
-        await status.setNextPc(cpu.regs.PC)
-        await status.resetLog()
-    }
-    
-    private func doStep() async -> UInt16 {
+
+    func doStep() async -> (UInt16, LogEntry) {
         var le = LogEntry(pc: cpu.regs.PC.toHex())
         
         cpu.wait = false
@@ -187,13 +210,7 @@ class Machine {
             le.inst = l.op.disassemble(l)
         }
         
-        await status.setNextPc(cpu.regs.PC)
-        await status.updateRegs(cpu.regs)
-        await status.appendLog(le)
-        await status.setBitmap(draw(display:bus.getBlock(addr: 0x4000, length: 0x4000)))
-        
-        await status.updateWatchedMemory()
-        return cpu.regs.PC
+        return (cpu.regs.PC, le)
     }
     
     func resetMemory() {
@@ -202,7 +219,8 @@ class Machine {
         }
     }
     
-    func draw(display: [UInt8]) -> Bitmap {
+    func getScreen() async -> Bitmap {
+        let display = bus.getBlock(addr: 0x4000, length: 0x4000)
         var bm = Bitmap(width: 256, height: 192, color: BitmapColor(r: 0xff, g: 0, b: 0, a: 0xff))
         for row in 0..<192 {
             for col in stride(from: 0, to: 256, by: 8) {
@@ -227,7 +245,7 @@ class Machine {
         return bm
     }
     
-    func getPixelsColors(attr :UInt8, pixles: UInt8) -> [BitmapColor] {
+    private func getPixelsColors(attr :UInt8, pixles: UInt8) -> [BitmapColor] {
         let flash = (attr & 0x80) == 0x80
         let brg = (attr & 0x40) >> 6
         let paper = palette[Int(((attr&0x38)>>3)+(brg*8))]
