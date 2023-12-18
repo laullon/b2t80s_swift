@@ -9,30 +9,22 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 extension UTType {
-    public static let tap = UTType(importedAs: "com.laullon.b2t80s.tap")
+    public static let tapType = UTType(importedAs: "com.laullon.b2t80s.tap")
 }
 
 @main
 struct b2t80sApp: App {
-    var machine: zx48k
+    var tap: String? = nil
     
     init() {
-        var tap: String? = nil
         if let idx = CommandLine.arguments.lastIndex(of: "-tap"){
             tap = CommandLine.arguments[idx+1]
-        }
-        let m = zx48k(tap: tap)
-        machine = m
-        if NSClassFromString("XCTestCase") == nil {
-            DispatchQueue(label: "machine").async {
-                m.run()
-            }
         }
     }
     
     var body: some Scene {
         WindowGroup {
-            ContentView(machine:machine)
+            ContentView(tap: tap)
         }
     }
 }

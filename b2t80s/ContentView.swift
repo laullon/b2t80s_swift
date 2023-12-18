@@ -6,43 +6,38 @@
 //
 
 import SwiftUI
-import Combine
 
 struct ContentView: View {
-    var machine: zx48k
-    
+    @StateObject private var machine = MachineZX48K()
+
     @AppStorage("volumen") private var volumen: Double = 0
-    @AppStorage("showDebuger") private var showDebuger = false
     
     @State private var inDisplay: Bool = false
-    @State private var showOverlay: Bool = false
-    @State private var showOverlayStarted = Date.now;
-    @State private var tapName = "pp";
     
+    private var tapName: String?
+
+    init(tap: String?) {
+        self.tapName = tap
+    }
+
     var body: some View {
         HStack {
-            Display(monitor: machine.monitor)
-                .overlay(ControlsOverlay(volumen: $volumen,
-                                         showDebuger: $showDebuger,
-                                         reset: machine.reset,
-                                         openFile: machine.openFile)
-                    .opacity(showOverlay ? 1 : 0), alignment: .bottomLeading)
+            Display(machine: machine)
                 .onContinuousHover { phase in
                     switch phase {
                     case .active:
                         inDisplay = true
-                        showOverlay = true
-                        showOverlayStarted = Date.now
                     case .ended:
                         inDisplay = false
-                        showOverlay = false
                     }
                 }
-            if showDebuger {
-                Spacer()
-                Debugger(machine: machine)
-                    .fixedSize(horizontal: true, vertical: false)
-            }
+                .inspector(isPresented: $machine.showDebuger) {
+                    Debugger(machine: machine)
+                        .inspectorColumnWidth(min: 455, ideal: 455, max: 455)
+                }
+        }
+        .toolbar {
+            ToolBar(machine: machine)
         }
         .onAppear() {
             NSEvent.addLocalMonitorForEvents(matching: [.keyDown,.keyUp,]) { (e) -> NSEvent? in
@@ -50,27 +45,32 @@ struct ContentView: View {
                     return e;
                 }
                 if !e.isARepeat{
-                    machine.ula.OnKey(e)
+                    machine.OnKey(e)
                 }
                 return nil
             }
-            machine.volumen = volumen
+//            machine.volumen = volumen
+            Task {
+                if (tapName != nil) {
+                    machine.setTap(tap:tapName!)
+                }
+                await machine.start(fast: false)
+            }
         }
         .onChange(of: volumen) {
-            machine.volumen = volumen
+//            machine.volumen = volumen
         }
         .onAppear() {
             Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [self] timer in
-                if showOverlayStarted.timeIntervalSinceNow < -5 {
-                    withAnimation {
-                        showOverlay = false
-                        if inDisplay{
-                            NSCursor.setHiddenUntilMouseMoves(true)
-                        }
+                withAnimation {
+                    if inDisplay{
+                        NSCursor.setHiddenUntilMouseMoves(true)
                     }
                 }
             }
         }
+        .navigationTitle("ZX Spectrum 48k")
+        .navigationSubtitle(machine.tapName)
     }
 }
 
@@ -81,22 +81,22 @@ struct ContentView: View {
 //}
 
 struct DebuggerDisassembler : View {
-    @ObservedObject var debugData: DebugData
+    @ObservedObject var debugData: MachineZX48K
     
     var body: some View {
         VStack(alignment: .leading) {
             Text("Debuger")
                 .padding(.bottom, 5)
             
-            Text(debugData.prev)
+            Text(debugData.history.prev)
                 .lineLimit(10)
             
-            Text(debugData.next)
+            Text(debugData.history.next)
                 .padding(.top, 3)
                 .padding(.bottom, 3)
                 .foregroundColor(.blue)
             
-            Text(debugData.diss)
+            Text(debugData.history.diss)
                 .lineLimit(10)
         }
         .fixedSize()
@@ -104,7 +104,7 @@ struct DebuggerDisassembler : View {
     }
 }
 
-struct Debugger : View {
+struct _Debugger : View {
     var machine: zx48k
     
     @StateObject var debugData:DebugData = DebugData()
@@ -151,8 +151,8 @@ struct Debugger : View {
 //                .padding()
             Divider()
             ScrollView {
-                DebuggerDisassembler(debugData: debugData)
-                    .padding()
+//                DebuggerDisassembler(debugData: debugData)
+//                    .padding()
                 Divider()
                 TabView {
                     BreakPointsView(breakPoints: $bp,symbols: $debugData.symbols)
@@ -160,18 +160,18 @@ struct Debugger : View {
                         .tabItem {
                             Text("BreakPoints")
                         }
-                    DebuggerMemory(symbols: debugData.symbols) { start, bytes in
-                        return machine.cpu.bus.getBlock(addr: start, length: bytes)
-                    }.tabItem {
-                        Text("Memory")
-                    }
+//                    DebuggerMemory(symbols: debugData.symbols) { start, bytes in
+//                        return machine.cpu.bus.getBlock(addr: start, length: bytes)
+//                    }.tabItem {
+//                        Text("Memory")
+//                    }
                     ULAView(bitmap: machine.ula.bitmap)
                         .tabItem {
                             Text("ULA")
                         }
-                    SpritesView(symbols: $debugData.symbols, getData: { bytes in
-                        return machine.cpu.bus.getBlock(addr: 0x08601, length: uint16(bytes))
-                    })
+//                    SpritesView(symbols: $debugData.symbols, getData: { bytes in
+//                        return machine.cpu.bus.getBlock(addr: 0x08601, length: uint16(bytes))
+//                    })
                     .frame(height:200)
                     .tabItem {
                         Text("Sprites")
@@ -239,11 +239,10 @@ struct Debugger : View {
 }
 
 struct Display : View {
-    @StateObject var monitor: Monitor
+    @StateObject var machine: MachineZX48K
     
-    var placeholder: Image = Image(systemName: "globe")
     var body: some View {
-        ( monitor.image == nil ? placeholder : monitor.image!)
+        Image(machine.display.cgImage(), scale:1, label: Text(verbatim: ""))
             .interpolation(.none)
             .resizable()
             .aspectRatio(contentMode: .fit)

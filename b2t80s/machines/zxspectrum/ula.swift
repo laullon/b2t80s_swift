@@ -27,8 +27,12 @@ var palette: [BitmapColor] =  [
     BitmapColor(r:0xff, g:0xff, b:0xff, a:0xff),
 ]
 
+protocol ULAListener {
+    func frameDone(bitmap: Bitmap)
+}
+
 class ULA: PortManager {
-    
+    var listener: ULAListener?
     
     //    memory *memory
     //    bus    z80.Bus
@@ -56,7 +60,7 @@ class ULA: PortManager {
     //    mux            sync.Mutex
     //
     
-    var monitor = Monitor()
+//    var monitor = Monitor()
     let width = 448
     let height = 312
 //    var bitmap = Bitmap(width: 448, height: 312, color: BitmapColor(r: 0, g: 0, b: 0, a: 0xff))
@@ -74,6 +78,7 @@ class ULA: PortManager {
     
     init(cpu: z80) {
         self.cpu = cpu
+        
         //    func NewULA(mem *memory, bus z80.Bus, plus bool) *ula {
         //        ula := &ula{
         //        memory:          mem,
@@ -220,7 +225,8 @@ class ULA: PortManager {
         
     func FrameDone() {
         frame = (frame + 1) & 0x1f
-        monitor.image = Image(bitmap.cgImage(), scale: 1, label: Text(verbatim: ""))
+        listener?.frameDone(bitmap: bitmap)
+//        monitor.image = Image(bitmap.cgImage(), scale: 1, label: Text(verbatim: ""))
         bitmap = Bitmap(width: 352, height: 296, color: BitmapColor(r: 0xff, g: 0, b: 0, a: 0xff))
     }
     

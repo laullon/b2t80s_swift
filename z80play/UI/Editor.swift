@@ -17,7 +17,7 @@ fileprivate let nextLineAttributes = [NSAttributedString.Key.backgroundColor: NS
 
 struct Editor: NSViewRepresentable {
     @Binding var text: String
-    @ObservedObject var machine: Machine
+    @ObservedObject var machine: MachinePlay
 
     func makeNSView(context: Context) -> NSScrollView {
         let scrollView = NSTextView.scrollableTextView()
@@ -107,7 +107,7 @@ struct Editor: NSViewRepresentable {
 }
 
 class LineNumberRulerView: NSRulerView {
-    var machine: Machine
+    var machine: MachinePlay
     private lazy var area = makeTrackingArea()
     private var hoverPoint = NSPoint.out
     private var hoverLine = Int.max
@@ -119,7 +119,7 @@ class LineNumberRulerView: NSRulerView {
     private let eyeSymbol_h = NSImage(systemSymbolName: "eye.circle", accessibilityDescription: "pause")!
     private let eyeSymbol_s = NSImage(systemSymbolName: "eye.circle.fill", accessibilityDescription: "pause")!
 
-    init(textView: NSTextView, machine: Machine) {
+    init(textView: NSTextView, machine: MachinePlay) {
         self.machine = machine
         super.init(scrollView: textView.enclosingScrollView!, orientation: NSRulerView.Orientation.verticalRuler)
         self.clientView = textView

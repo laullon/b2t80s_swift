@@ -21,7 +21,7 @@ extension String {
     struct AddrParseStrategy: Foundation.ParseStrategy {
         public func parse(_ value: String) throws -> String {
             let regex = /0?x?([0-9a-fA-F]{0,4})\s?(.*)/
-
+            
             let res = try regex.wholeMatch(in: value)!
             return "0x\(res.1) \(res.2)".trimmingCharacters(in: .whitespaces)
         }
@@ -50,6 +50,17 @@ struct AddrSelector: View {
     @State private var listSelection: String = ""
     @State private var text = "0x0000"
     
+    @State private var searchText = ""
+    
+    var searchResults: [Symbol] {
+        if searchText.isEmpty {
+            return model.symbols.sorted(by: <)
+        } else {
+            return model.symbols.sorted(by: <).filter { "\($0.addr.toHex())\($0.name)".contains(searchText) }
+        }
+    }
+    
+    
     var body: some View {
         HStack {
             TextField("",value: $text, format: .addr)
@@ -60,11 +71,13 @@ struct AddrSelector: View {
             }
             .popover(isPresented: $pop) {
                 List(selection: $listSelection) {
-                    ForEach(Array(model.symbols.sorted(by: <)), id: \.self) { symbol in
-                        Text("\(symbol.addr.toHex()) \(symbol.name)")
-                            .tag("\(symbol.addr.toHex()) \(symbol.name)")
-                    }
+                    TextField("name:",text: $searchText).textFieldStyle(.roundedBorder)
+                        ForEach(searchResults, id: \.self) { symbol in
+                            Text("\(symbol.addr.toHex()) \(symbol.name)")
+                                .tag("\(symbol.addr.toHex()) \(symbol.name)")
+                        }
                 }
+                .searchable(text: $searchText, prompt: Text("Search"))
                 .onChange(of: listSelection) {
                     pop.toggle()
                     text = listSelection
@@ -89,7 +102,11 @@ struct AddrSelector: View {
 
 #Preview {
     let model = DebuggerMemoryModel()
-    model.symbols = [Symbol(addr: 0x1234, name: "aaa")]
+    model.symbols = [
+        Symbol(addr: 0x1234, name: "aaa"),
+        Symbol(addr: 0x1235, name: "bbb"),
+        Symbol(addr: 0x1236, name: "ccc"),
+    ]
     model.start = Symbol(addr: 0, name: "")
     
     return AddrSelector(model: model)

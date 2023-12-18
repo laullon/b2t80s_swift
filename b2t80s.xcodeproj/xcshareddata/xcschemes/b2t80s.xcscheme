@@ -90,11 +90,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/glaullon/Downloads/BorderTronCC16K.tap"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "/Users/glaullon/zxspectrum/pacman-zx/pacman.tap"
+            argument = "/Users/glaullon/Library/Mobile\ Documents/com~apple~CloudDocs/dev/zxspectrum/pacman-zx/pacman.tap"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

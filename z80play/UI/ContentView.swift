@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     @Binding var doc: z80playDocument
-    @StateObject private var machine = Machine()
+    @StateObject private var machine = MachinePlay()
     
     var body: some View {
         HStack {

@@ -7,10 +7,6 @@
 
 import Foundation
 
-enum Status {
-    case ready, error, runing, bussy
-}
-
 struct LogEntry: Identifiable {
     let id = UUID()
     var pc: String
@@ -26,13 +22,13 @@ struct WatchEntry: Identifiable {
 }
 
 @MainActor
-class Machine: ObservableObject{
+class MachinePlay: Machine {
+    @Published var status = Status.ready
     @Published var registersData = RegistersData()
     @Published var nextPc = UInt16(0)
     @Published var symbols : [Symbol] = []
     @Published var ops: [Op] = []
     @Published var log: [LogEntry] = []
-    @Published var status = Status.ready
     @Published var bitmap: Bitmap?
     @Published var watchedMemory: [WatchEntry] = []
     
@@ -57,8 +53,9 @@ class Machine: ObservableObject{
     
     func reset() async {
         engine.cpu.regs.PC = 0
-        setNextPc(engine.cpu.regs.PC)
+        engine.resetMemory()
         resetLog()
+        await updateUI()
     }
 
     func start(fast: Bool) async {
@@ -82,48 +79,40 @@ class Machine: ObservableObject{
         status = .ready
     }
     
-    func resetMemory() {
-        engine.resetMemory()
-    }
-
     func step() async {
         status = .runing
         _ = await doStep()
         status = .ready
     }
 
-    func doStep() async -> UInt16 {
+    private func doStep() async -> UInt16 {
         let (pc, le) = await self.engine.doStep()
-        setNextPc(pc)
-        updateRegs(engine.cpu.regs)
         appendLog(le)
-        setBitmap(await engine.getScreen())
-        updateWatchedMemory()
+        await updateUI()
         return pc
     }
     
     func complie(code: String) async {
-        setStatus(.bussy)
+        status = .bussy
         
         stop()
         await reset()
-        resetMemory()
         
         let (ops,symbols) = engine.compile(code: code)
                 
-        setStatus(.ready)
-        setBitmap(await engine.getScreen())
+        status = .ready
         updateCode(ops, symbols: symbols)
+        await updateUI()
+    }
+    
+    private func updateUI() async {
+        let stack = dumpMemory(engine.cpu.regs.SP, 8*2)
+        setNextPc(engine.cpu.regs.PC)
+        updateRegs(engine.cpu.regs,stack: stack)
+        bitmap = await engine.getScreen()
+        updateWatchedMemory()
     }
 
-    func setStatus(_ status: Status) {
-        self.status = status
-    }
-    
-    func setBitmap(_ bitmap: Bitmap) {
-        self.bitmap = bitmap
-    }
-    
     func updateWatchedMemory() {
         var watched = [WatchEntry]()
         ops.filter { $0.inst is DB }.forEach { op in
@@ -151,8 +140,8 @@ class Machine: ObservableObject{
         spriteDebugger.update()
     }
     
-    func updateRegs(_ regs: Registers) {
-        registersData.update(regs: regs)
+    func updateRegs(_ regs: Registers, stack: [UInt8]) {
+        registersData.update(regs: regs, stack: stack)
     }
     
     func appendLog(_ le: LogEntry) {

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct Watch: View {
-    @ObservedObject var machine: Machine
+    @ObservedObject var machine: MachinePlay
     
     var body: some View {
         Table(machine.watchedMemory) {
@@ -20,7 +20,7 @@ struct Watch: View {
 }
 
 #Preview {
-    let machine = Machine()
+    let machine = MachinePlay()
     var ops = [WatchEntry]()
     for i in 0..<5 {
         let data = WatchEntry(pc: UInt16(1*0x0100).toHex(),

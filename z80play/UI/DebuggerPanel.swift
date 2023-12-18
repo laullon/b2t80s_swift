@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct DebuggerPanel: View {
-    @ObservedObject var machine: Machine
+    @ObservedObject var machine: MachinePlay
     
-    init(machine: Machine) {
+    init(machine: MachinePlay) {
         self.machine = machine
     }
     
@@ -47,5 +47,5 @@ struct DebuggerPanel: View {
 }
 
 #Preview {
-    return DebuggerPanel(machine: Machine()).frame(height: 500)
+    return DebuggerPanel(machine: MachinePlay()).frame(height: 500)
 }

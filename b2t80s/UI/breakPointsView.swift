@@ -27,7 +27,7 @@ struct BreakPointsView: View {
     
     var body: some View {
         VStack {
-            AddrSelector(symbols: symbols, selection: $newBreakPoint)
+//            AddrSelector(symbols: symbols, selection: $newBreakPoint)
             Table(breakPoints.sorted(by: <)){
                 TableColumn("") { mark in
                     Toggle("", isOn: Binding<Bool>(

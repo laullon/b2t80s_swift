@@ -65,6 +65,21 @@
                   endingLineNumber = "86"
                   offsetFromSymbolStart = "932">
                </Location>
+               <Location
+                  uuid = "3AA53F2B-BFA1-4D2D-9EFA-371DB6B6B399 - f4d90639ba37945b"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Swift.UInt16.init(asm: Swift.String) -&gt; Swift.Optional&lt;Swift.UInt16&gt;"
+                  moduleName = "b2t80s"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/glaullon/Library/Mobile%20Documents/com~apple~CloudDocs/dev/zxspectrum/swift/b2t80s/z80cpu/CPU/Z80/types.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "86"
+                  endingLineNumber = "86"
+                  offsetFromSymbolStart = "932">
+               </Location>
             </Locations>
          </BreakpointContent>
       </BreakpointProxy>
@@ -98,6 +113,22 @@
             endingLineNumber = "17"
             landmarkName = "LogEntry"
             landmarkType = "14">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "E0352F09-FE12-4AE1-BEB8-9EAE3123E869"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "b2t80s/Machine.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "20"
+            endingLineNumber = "20"
+            landmarkName = "Machine"
+            landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

@@ -12,30 +12,42 @@ struct Collapsible<Content: View>: View {
     var content: () -> Content
 
     @State private var collapsed: Bool = false
-    
-    var body: some View {
-        VStack {
-            Button(
-                action: { withAnimation { self.collapsed.toggle() } },
-                label: {
-                    HStack {
-                        self.label()
-                        Spacer()
-                        Image(systemName: self.collapsed ? "chevron.down" : "chevron.up")
-                    }
-                    .padding(.bottom, 1)
-                    .background(Color.white.opacity(0.01))
-                }
-            )
-            .buttonStyle(PlainButtonStyle())
-            .zIndex(99)
+    @State private var show: Bool = true
 
-            VStack {
-                self.content()
+    var body: some View {
+        VStack(alignment: .leading) {
+            HStack(spacing: 0) {
+                Button() {
+                    if collapsed {
+                        show = true
+                        withAnimation {
+                          collapsed = false
+                        }
+                    } else {
+                        withAnimation {
+                          collapsed = true
+                        } completion: {
+                            show = false
+                        }
+
+                    }
+                } label: {
+                    Image(systemName: "chevron.down")
+                        .rotationEffect(collapsed ? .degrees(-90) : .zero )
+                    self.label()
+                }.focusable(false)
             }
-            .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: collapsed ? 0 : .none)
-            .clipped()
-            .zIndex(0)
+            .buttonStyle(.plain)
+            .padding(EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10))
+
+            if (show) {
+                self.content()
+                    .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: collapsed ? 0 : .none)
+                    .clipped()
+                    .zIndex(0)
+                    .padding(.leading,10)
+            }
+            Divider()
         }
     }
 }
