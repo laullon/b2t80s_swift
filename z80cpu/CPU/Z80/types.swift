@@ -73,7 +73,8 @@ struct opCode {
     }
 }
 
-let bogusOpCode = opCode("bogus", 0, 0, 0, [], {cpu in fatalError()})
+//let bogusOpCode = opCode("bogus", 0, 0, 0, [], {cpu in fatalError()})
+let bogusOpCode = opCode("bogus", 0, 0, 0, [], {cpu in ()})
 
 public extension UInt16 {
     init?(asm: String) {

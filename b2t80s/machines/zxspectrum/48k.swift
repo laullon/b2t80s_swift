@@ -15,6 +15,11 @@ class DissamblerInfo {
 }
 
 class MachineZX48K: Machine, ULAListener {
+    @AppStorage("volumen") var volumen: Double = 0 {
+        didSet {
+            engine.volumen = volumen
+        }
+    }
     @AppStorage("showDebuger") var showDebuger = false
     
     @Published var status = Status.paused
@@ -57,6 +62,11 @@ class MachineZX48K: Machine, ULAListener {
     }
     
     func reset() async {
+        engine.cpu.doReset = true
+    }
+        
+    func openfile() {
+        self.tapName = engine.openFile() ?? "no Tap"
     }
         
     var frame = 0
@@ -103,7 +113,8 @@ class MachineZX48K: Machine, ULAListener {
     }
     
     func setTap(tap: String) {
-        self.tapName = engine.setTap(tap: tap)
+        let url = URL(filePath: tap)
+        self.tapName = engine.setTap(tap: url)
         self.memDebugger.symbols = engine.symbols
     }
 }
@@ -190,7 +201,7 @@ class zx48k {
         keysToPress = loadKeys
     }
     
-    func openFile() {
+    func openFile() -> String? {
         let op = NSOpenPanel()
         op.allowedContentTypes = [.tapType]
         op.canCreateDirectories = true
@@ -202,20 +213,20 @@ class zx48k {
         let response = op.runModal()
         if (response == .OK) {
             let url = op.url!
-            cassete.tap = try! Tap(url,symbols: &symbols)
+            return setTap(tap: url)
         }
+        return nil
     }
     
-    func setTap(tap: String) -> String {
-        let url = URL(filePath: tap)
+    func setTap(tap: URL) -> String {
         do {
-            cassete.tap = try Tap(url, symbols: &symbols)
+            cassete.tap = try Tap(tap, symbols: &symbols)
             keysToPress = loadKeys
         } catch {
             print("Unexpected error: \(error).")
             return "error"
         }
-        return url.lastPathComponent
+        return tap.lastPathComponent
     }
         
     func step() {

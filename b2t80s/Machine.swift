@@ -8,7 +8,7 @@
 import Foundation
 
 enum Status {
-    case paused, error, runing, bussy
+    case paused, error, runing
 }
 
 

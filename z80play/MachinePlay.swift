@@ -23,7 +23,7 @@ struct WatchEntry: Identifiable {
 
 @MainActor
 class MachinePlay: Machine {
-    @Published var status = Status.ready
+    @Published var status = Status.paused
     @Published var registersData = RegistersData()
     @Published var nextPc = UInt16(0)
     @Published var symbols : [Symbol] = []
@@ -76,13 +76,13 @@ class MachinePlay: Machine {
             }
         } while !done
         done = false
-        status = .ready
+        status = .paused
     }
     
     func step() async {
         status = .runing
         _ = await doStep()
-        status = .ready
+        status = .paused
     }
 
     private func doStep() async -> UInt16 {
@@ -93,14 +93,14 @@ class MachinePlay: Machine {
     }
     
     func complie(code: String) async {
-        status = .bussy
+        status = .runing
         
         stop()
         await reset()
         
         let (ops,symbols) = engine.compile(code: code)
                 
-        status = .ready
+        status = .paused
         updateCode(ops, symbols: symbols)
         await updateUI()
     }
@@ -141,7 +141,7 @@ class MachinePlay: Machine {
     }
     
     func updateRegs(_ regs: Registers, stack: [UInt8]) {
-        registersData.update(regs: regs, stack: stack)
+        registersData = RegistersData(regs: regs, stack: stack, prev: registersData)
     }
     
     func appendLog(_ le: LogEntry) {

@@ -36,8 +36,10 @@ extension ULA {
         if e.modifierFlags.contains(.control) {
             setBit(7,2,keyDown)
         }
+        
+        print(e)
+        
         switch e.charactersIgnoringModifiers?.uppercased() {
-            
         case "1":
             setBit(3,1,keyDown)
         case "2":
@@ -111,7 +113,7 @@ extension ULA {
         case "V":
             setBit(0,5,keyDown)
             
-        case "SPACE":
+        case " ":
             setBit(7,1,keyDown)
         case "M":
             setBit(7,3,keyDown)

@@ -63,7 +63,6 @@ class ULA: PortManager {
 //    var monitor = Monitor()
     let width = 448
     let height = 312
-//    var bitmap = Bitmap(width: 448, height: 312, color: BitmapColor(r: 0, g: 0, b: 0, a: 0xff))
     var bitmap = Bitmap(width: 352, height: 296, color: BitmapColor(r: 0xff, g: 0, b: 0, a: 0xff))
     
     let sound = SoundEngine()
@@ -71,12 +70,19 @@ class ULA: PortManager {
     
     let screenH = (0...255)
     let screenV = (0...191)
-    let borderB = (192...247)
-    let borderT = (256...311)
-    let borderR = (256...319)
-    let borderL = (416...447)
     
+    var data: [BitmapColor]
+    var screenData: UInt8 = 0
+    var attrData: UInt8 = 0
+    var screenData_2: UInt8 = 0
+    var attrData_2: UInt8 = 0
+    var content = false
+    var ts = 0
+
+
     init(cpu: z80) {
+        data = Array(repeating: borderColour, count: 8)
+        
         self.cpu = cpu
         
         //    func NewULA(mem *memory, bus z80.Bus, plus bool) *ula {
@@ -115,6 +121,24 @@ class ULA: PortManager {
         keyboardRow[7] = 0x1f
     }
     
+    func getAttrAddr() -> UInt16 {
+        var attrAddr = 0x5800
+        attrAddr |= (row&0b11111000)<<2
+        attrAddr |= (col&0b11111000)>>3
+        return UInt16(attrAddr)
+    }
+
+    func getScreenAddr() -> UInt16 {
+        //       _____ ________   ________ ______________
+        // 0 1 0 Y7 Y6 Y2 Y1 YO | Y5 Y4 Y3 X4 X3 X2 X1 X0
+        var addr = 0b010_00_000_000_00000
+        addr |= (row&0b11000000)<<5
+        addr |= (row&0b00000111)<<8
+        addr |= (row&0b00111000)<<2
+        addr |= (col&0b11111000)>>3
+        return UInt16(addr)
+    }
+    
     func tick() {
         if cpu.wait {
             return
@@ -132,72 +156,67 @@ class ULA: PortManager {
             sound.tick(buzzer)
         }
 
-        for _ in 0..<2{
-            
-            // SCREEN
-            let draw = col%8 == 0
-            let inScreen = screenH.contains(col) && screenV.contains(row)
-            let inBorderT = borderT.contains(row)
-            let inBorderB = borderB.contains(row)
-            let inBorderL = borderL.contains(col)
-            let inBorderR = borderR.contains(col)
-            let inBorder = inBorderT || inBorderB ||  inBorderL || inBorderR
+        let inScreen = screenH.contains(col) && screenV.contains(row)
+        content = inScreen
+        if inScreen {
+            switch ts%8 {
+            case 0:
+                screenData = cpu.bus.readVideoMemory(getScreenAddr())
+                floatingBus = screenData
+                
+            case 1:
+                attrData = cpu.bus.readVideoMemory(getAttrAddr())
+                floatingBus = attrData
+                
+            case 2:
+                screenData_2 = cpu.bus.readVideoMemory(getScreenAddr()+1)
+                floatingBus = screenData_2
+                
+            case 3:
+                attrData_2 = cpu.bus.readVideoMemory(getAttrAddr()+1)
+                floatingBus = attrData_2
 
-            var io = false
-            if inScreen {
-                io = (col % 8) < 6
-            } else {
+            case 4:
+                data.append(contentsOf: getPixelsColors(attr: attrData, pixles: screenData))
                 floatingBus = 0xff
+
+            case 5:
+                data.append(contentsOf: getPixelsColors(attr: attrData_2, pixles: screenData_2))
+
+            case 6,7:
+                content = false
+
+            default:
+                fatalError()
             }
-            
-            if draw {
-                let (x,y) = getXY(col,row)
-                if inScreen {
-                    //       _____ ________   ________ ______________
-                    // 0 1 0 Y7 Y6 Y2 Y1 YO | Y5 Y4 Y3 X4 X3 X2 X1 X0
-                    var addr = 0b010_00_000_000_00000
-                    addr |= (row&0b11000000)<<5
-                    addr |= (row&0b00000111)<<8
-                    addr |= (row&0b00111000)<<2
-                    addr |= (col&0b11111000)>>3
-                    
-                    let pixles = cpu.bus.readVideoMemory(UInt16(addr))
-                    floatingBus = pixles
-                    
-                    var attrAddr = 0x5800
-                    attrAddr |= (row&0b11111000)<<2
-                    attrAddr |= (col&0b11111000)>>3
-                    let attr = cpu.bus.readVideoMemory(UInt16(attrAddr))
-                    
-                    for (i, c) in getPixelsColors(attr: attr, pixles: pixles).enumerated() {
-                        bitmap[x+i,y] = c
-                    }
-                } else {
-                    if inBorder {
-                        for i in 0..<8 {
-                            bitmap[x+i,y] = borderColour
-                        }
-                    }
-                }
+        } else {
+            if (ts%8 == 3) || (ts%8 == 7) {
+                data.append(contentsOf: Array(repeating:borderColour, count: 8))
             }
-            
-            // CPU CLOCK
-            if col%2 == 0 {
-                if inScreen && io {
-                    if ((cpu.bus.addr&0xc000) != 0x4000) { // && ((cpu.bus.addr&0xff) != 0xfe){
-                        cpu.tick()
-                    }
-                } else {
-                    cpu.tick()
-                }
+        }
+        
+        if content {
+            if ((cpu.bus.addr&0xc000) != 0x4000) && ((cpu.bus.addr&0xff) != 0xfe) {
+                cpu.tick()
             }
-            
+        } else {
+            cpu.tick()
+        }
+        
+//        print(ts,ts%8,inScreen,data.count)
+        ts&+=1
+
+        for _ in 0..<2{
+            let (x,y) = getXY(col,row)
+            bitmap[x,y] = data.removeFirst()
+                        
             col += 1
             if col == 448 {
                 col = 0
                 row += 1
                 if row == 312 {
                     row = 0
+                    ts = 0
                     FrameDone()
                 }
             }
